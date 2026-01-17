@@ -62,6 +62,8 @@
 		class:skipped={isSkipped}
 		class:bonus={isBonus}
 		class:non-editable={true}
+		class:has-player-color={playerColor !== null}
+		style={playerColor ? `background-color: ${playerColor.cell}; color: ${playerColor.text};` : ''}
 	>
 		<div class="score-value">
 			{#if isSkipped}
@@ -77,12 +79,13 @@
 	.score-cell {
 		padding: 0.5rem;
 		border: 1px solid #ddd;
-		min-height: 2.5rem;
+		height: 3rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
 		background: transparent;
+		box-sizing: border-box;
 	}
 
 	.score-cell:hover {
@@ -102,7 +105,7 @@
 	}
 
 	.score-cell.skipped {
-		border: 1px dashed #adb5bd;
+		border: 1px solid #ddd;
 	}
 
 	.score-cell.skipped:hover {
@@ -115,7 +118,6 @@
 	}
 
 	.score-cell.bonus {
-		background: #e7f3ff;
 		font-weight: 600;
 	}
 

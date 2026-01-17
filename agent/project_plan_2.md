@@ -86,3 +86,21 @@ Status: ✅ Completed
 - The ranking-popup has a button to dismiss the popup. 
 - In the hamburger menu, show a "overall ranking" entry.
 - The "overall ranking" also displays the ranking-popup but the ranking table is calculated from the results in the game history table
+
+## Story 2.7 High-Score and confetti
+
+### Acceptance Criteria:
+- Replace the "overall ranking" with a "high score": From the game history select the top 10 scores and render a list, sorted by number of points descending with the following columns: player name, score, date
+- When the yatzy score (50) is entered, celebrate with a shower of confetti 
+- Also render the confetti, whenever the game score popup or the high score is triggered
+
+### Technical Implementation
+- n/a
+
+### Testing:
+- n/a
+
+
+## Story 2.8 Adapted value entry 
+
+### Acceptance Criteria:

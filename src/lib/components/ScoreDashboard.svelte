@@ -378,12 +378,13 @@
 									{@const cellScore = getScore(player, scoreCategory)}
 									{@const hasValue = cellScore !== undefined && cellScore !== null}
 									{@const isSkipped = cellScore === null}
+									{@const isBonus = scoreCategory === 'bonus'}
 									<ScoreCell
 										score={cellScore}
 										category={scoreCategory}
-										isBonus={scoreCategory === 'bonus'}
-										isEditable={scoreCategory !== 'bonus'}
-										playerColor={hasValue || isSkipped ? playerColor : null}
+										isBonus={isBonus}
+										isEditable={!isBonus}
+										playerColor={isBonus || hasValue || isSkipped ? playerColor : null}
 										onClick={() => handleCellClick(player.id, scoreCategory)}
 									/>
 								{/if}
@@ -517,6 +518,14 @@
 		table-layout: auto;
 	}
 
+	.score-table tbody tr {
+		height: 3rem;
+	}
+
+	.score-table tbody tr.total-row {
+		height: 3rem;
+	}
+
 	.category-col {
 		width: auto;
 		min-width: fit-content;
@@ -581,6 +590,8 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+		height: 3rem;
+		box-sizing: border-box;
 	}
 
 	.dice-icon {
@@ -604,10 +615,11 @@
 		font-weight: 600;
 		background: #f8f9fa;
 		border: 1px solid #ddd;
-		min-height: 2.5rem;
+		height: 3rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		box-sizing: border-box;
 	}
 
 	.total-row {
@@ -629,7 +641,9 @@
 		width: var(--player-column-width) !important;
 		max-width: var(--player-column-width) !important;
 		min-width: var(--player-column-width) !important;
+		height: 3rem;
 		box-sizing: border-box;
+		vertical-align: middle;
 	}
 
 </style>
