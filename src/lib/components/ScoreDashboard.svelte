@@ -14,6 +14,8 @@
 	import PlayerNameEditPopup from './PlayerNameEditPopup.svelte';
 	import HamburgerMenu from './HamburgerMenu.svelte';
 	import RankingPopup from './RankingPopup.svelte';
+	import HighScorePopup from './HighScorePopup.svelte';
+	import { triggerConfetti } from '../utils/confetti';
 
 	let playerNameEditState: {
 		isOpen: boolean;
@@ -31,6 +33,11 @@
 		isOpen: boolean;
 		title: string;
 		rankings: Array<{ rank: number; playerName: string; total: number; colorIndex?: number }>;
+	} | null = $state(null);
+
+	let highScorePopupState: {
+		isOpen: boolean;
+		highScores: Array<{ playerName: string; score: number; date: string }>;
 	} | null = $state(null);
 
 	let players = $derived($gameStore.players);
@@ -142,6 +149,14 @@
 		score: number | null | undefined
 	) {
 		gameStore.setScore(playerId, category, score);
+		
+		// Trigger confetti if yatzy (50 points) is entered
+		if (category === 'yatzy' && score === 50) {
+			setTimeout(() => {
+				triggerConfetti();
+			}, 100);
+		}
+		
 		popupState = null;
 	}
 
@@ -183,61 +198,47 @@
 			title: t('ranking', currentLang),
 			rankings
 		};
+		
+		// Trigger confetti when ranking popup is shown
+		setTimeout(() => {
+			triggerConfetti();
+		}, 100);
 	}
 
 	function handleCloseRanking() {
 		rankingPopupState = null;
 	}
 
-	function handleShowOverallRanking() {
-		// Calculate overall ranking from game history
+	function handleShowHighScore() {
+		// Calculate high scores from game history
 		const history = loadGameHistory();
 		
-		// Aggregate totals by player name across all games
-		const playerTotals = new Map<string, { total: number; games: number; colorIndex?: number }>();
+		// Collect all individual scores from all games
+		const allScores: Array<{ playerName: string; score: number; date: string }> = [];
 		
 		history.forEach((entry) => {
 			entry.results.forEach((result) => {
-				const existing = playerTotals.get(result.playerName);
-				if (existing) {
-					existing.total += result.total;
-					existing.games += 1;
-				} else {
-					// Try to find color index from current players if they match
-					const currentPlayer = players.find((p) => p.name === result.playerName);
-					playerTotals.set(result.playerName, {
-						total: result.total,
-						games: 1,
-						colorIndex: currentPlayer?.colorIndex
-					});
-				}
+				allScores.push({
+					playerName: result.playerName,
+					score: result.total,
+					date: entry.date
+				});
 			});
 		});
 
-		// Convert to array and calculate average, then sort by average
-		const rankings = Array.from(playerTotals.entries())
-			.map(([playerName, data]) => ({
-				playerName,
-				total: data.games > 0 ? Math.round(data.total / data.games) : 0, // Average score
-				colorIndex: data.colorIndex
-			}))
-			.sort((a, b) => b.total - a.total) // Sort descending by average
-			.map((entry, index) => ({
-				...entry,
-				rank: index + 1
-			}));
+		// Sort by score descending and take top 10
+		const highScores = allScores
+			.sort((a, b) => b.score - a.score)
+			.slice(0, 10);
 
-		if (rankings.length === 0) {
-			// Show message that no history exists
-			alert(t('noGameHistory', currentLang) || 'No game history available');
-			return;
-		}
-
-		rankingPopupState = {
+		highScorePopupState = {
 			isOpen: true,
-			title: t('overallRanking', currentLang),
-			rankings
+			highScores
 		};
+	}
+
+	function handleCloseHighScore() {
+		highScorePopupState = null;
 	}
 
 
@@ -323,7 +324,7 @@
 			onNewGame={handleNewGame}
 			onClearScoreboard={handleClearScoreboard}
 			onClearHistory={handleClearHistory}
-			onShowOverallRanking={handleShowOverallRanking}
+			onShowHighScore={handleShowHighScore}
 		/>
 		</div>
 	</div>
@@ -452,6 +453,14 @@
 			title={rankingPopupState.title}
 			rankings={rankingPopupState.rankings}
 			onClose={handleCloseRanking}
+		/>
+	{/if}
+
+	{#if highScorePopupState}
+		<HighScorePopup
+			isOpen={highScorePopupState.isOpen}
+			highScores={highScorePopupState.highScores}
+			onClose={handleCloseHighScore}
 		/>
 	{/if}
 

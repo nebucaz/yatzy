@@ -88,6 +88,7 @@ Status: ✅ Completed
 - The "overall ranking" also displays the ranking-popup but the ranking table is calculated from the results in the game history table
 
 ## Story 2.7 High-Score and confetti
+Status: ✅ Completed
 
 ### Acceptance Criteria:
 - Replace the "overall ranking" with a "high score": From the game history select the top 10 scores and render a list, sorted by number of points descending with the following columns: player name, score, date
@@ -104,3 +105,12 @@ Status: ✅ Completed
 ## Story 2.8 Adapted value entry 
 
 ### Acceptance Criteria:
+- We should constraint the entry of "chance" to a point range between 5 and 30 points
+- The popup for entering "one pair", "three of a kind" and "four of a kind" should only display one icon for each dice value (1,2,3,4,5,6). The corresponding value should be calculated and entered as value in the cell. For instance, if "three of a kind" is entered and the dice icon for "4" is selected, a value of 12 should be entered in the cell value.
+- The popup for entering "ones", "twos", "trees", "fours", "fives" and "sixes" should show an icon for "1x" ,"2x", "3x", "4x", "5x" which is the multiplicator. Then, the value to be entered should be calculated. For instance: If in the row for "fives" the factor "4x" is selected, a value of 20 should be entered as the cell value.
+
+### Technical Implementation
+- n/a
+
+### Testing:
+- n/a

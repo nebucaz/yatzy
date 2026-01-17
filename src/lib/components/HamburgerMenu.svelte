@@ -8,10 +8,10 @@
 		onNewGame: () => void;
 		onClearScoreboard: () => void;
 		onClearHistory: () => void;
-		onShowOverallRanking: () => void;
+		onShowHighScore: () => void;
 	}
 
-	let { onNewGame, onClearScoreboard, onClearHistory, onShowOverallRanking }: Props = $props();
+	let { onNewGame, onClearScoreboard, onClearHistory, onShowHighScore }: Props = $props();
 
 	let isOpen = $state(false);
 	let showNewGameDialog = $state(false);
@@ -40,8 +40,8 @@
 		isOpen = false;
 	}
 
-	function handleOverallRankingClick() {
-		onShowOverallRanking();
+	function handleHighScoreClick() {
+		onShowHighScore();
 		isOpen = false;
 	}
 
@@ -102,8 +102,8 @@
 				<button class="menu-item" onclick={handleClearHistoryClick}>
 					{t('clearHistory', currentLang)}
 				</button>
-				<button class="menu-item" onclick={handleOverallRankingClick}>
-					{t('overallRanking', currentLang)}
+				<button class="menu-item" onclick={handleHighScoreClick}>
+					{t('highScore', currentLang)}
 				</button>
 			</div>
 		</div>

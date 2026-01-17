@@ -54,7 +54,9 @@ export interface Translations {
 	gameHistory: string;
 	ranking: string;
 	overallRanking: string;
+	highScore: string;
 	noGameHistory: string;
+	noHighScores: string;
 
 	// Labels
 	playerName: string;
@@ -117,7 +119,9 @@ export const translations: Record<Language, Translations> = {
 		gameHistory: 'Game History',
 		ranking: 'Ranking',
 		overallRanking: 'Overall Ranking',
+		highScore: 'High Score',
 		noGameHistory: 'No game history available',
+		noHighScores: 'No high scores yet. Play some games to see your top scores!',
 		playerName: 'Player Name:',
 		enterPlayerName: 'Enter player name',
 		clearConfirmation: 'Are you sure you want to clear all scores? This action cannot be undone.',
@@ -174,7 +178,9 @@ export const translations: Record<Language, Translations> = {
 		gameHistory: 'Spielverlauf',
 		ranking: 'Rangliste',
 		overallRanking: 'Gesamtrangliste',
+		highScore: 'Bestenliste',
 		noGameHistory: 'Kein Spielverlauf verfügbar',
+		noHighScores: 'Noch keine Bestenliste. Spiele einige Spiele, um deine Top-Scores zu sehen!',
 		playerName: 'Spielername:',
 		enterPlayerName: 'Spielername eingeben',
 		clearConfirmation: 'Sind Sie sicher, dass Sie alle Punkte löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
@@ -231,7 +237,9 @@ export const translations: Record<Language, Translations> = {
 		gameHistory: 'Historial de Juegos',
 		ranking: 'Clasificación',
 		overallRanking: 'Clasificación General',
+		highScore: 'Mejores Puntuaciones',
 		noGameHistory: 'No hay historial de juegos disponible',
+		noHighScores: 'Aún no hay mejores puntuaciones. ¡Juega algunos juegos para ver tus mejores puntuaciones!',
 		playerName: 'Nombre del Jugador:',
 		enterPlayerName: 'Ingrese el nombre del jugador',
 		clearConfirmation: '¿Está seguro de que desea limpiar todos los puntos? Esta acción no se puede deshacer.',
@@ -288,7 +296,9 @@ export const translations: Record<Language, Translations> = {
 		gameHistory: 'Historique des Parties',
 		ranking: 'Classement',
 		overallRanking: 'Classement Général',
+		highScore: 'Meilleurs Scores',
 		noGameHistory: 'Aucun historique de parties disponible',
+		noHighScores: 'Pas encore de meilleurs scores. Jouez quelques parties pour voir vos meilleurs scores!',
 		playerName: 'Nom du Joueur:',
 		enterPlayerName: 'Entrez le nom du joueur',
 		clearConfirmation: 'Êtes-vous sûr de vouloir effacer tous les scores? Cette action ne peut pas être annulée.',
@@ -345,7 +355,9 @@ export const translations: Record<Language, Translations> = {
 		gameHistory: 'Cronologia Giochi',
 		ranking: 'Classifica',
 		overallRanking: 'Classifica Generale',
+		highScore: 'Migliori Punteggi',
 		noGameHistory: 'Nessuna cronologia di giochi disponibile',
+		noHighScores: 'Ancora nessun miglior punteggio. Gioca alcune partite per vedere i tuoi migliori punteggi!',
 		playerName: 'Nome Giocatore:',
 		enterPlayerName: 'Inserisci nome giocatore',
 		clearConfirmation: 'Sei sicuro di voler cancellare tutti i punti? Questa azione non può essere annullata.',
