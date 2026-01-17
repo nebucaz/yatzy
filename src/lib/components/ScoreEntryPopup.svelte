@@ -1,6 +1,11 @@
 <script lang="ts">
 	import type { ScoreCategory } from '../types';
 	import { getPossibleValues } from '../utils/scoreValues';
+	import { languageStore } from '../stores/i18nStore';
+	import { t } from '../utils/i18n';
+
+	// Make component reactive to language changes
+	let currentLang = $derived($languageStore);
 
 	interface Props {
 		isOpen: boolean;
@@ -103,7 +108,7 @@
 						</button>
 						<button class="num-btn" onclick={() => handleNumberPadInput('clear')}>C</button>
 					</div>
-					<button class="confirm-btn" onclick={handleNumberPadConfirm}>Confirm</button>
+					<button class="confirm-btn" onclick={handleNumberPadConfirm}>{t('confirm', currentLang)}</button>
 				</div>
 			{:else if possibleValues}
 				<!-- Value buttons for limited options -->
@@ -121,11 +126,11 @@
 
 			<div class="popup-actions">
 				{#if isSkipped}
-					<button class="btn btn-unskip" onclick={handleUnskip}>Unskip</button>
+					<button class="btn btn-unskip" onclick={handleUnskip}>{t('unskip', currentLang)}</button>
 				{:else}
-					<button class="btn btn-skip" onclick={handleSkip}>Skip</button>
+					<button class="btn btn-skip" onclick={handleSkip}>{t('skip', currentLang)}</button>
 				{/if}
-				<button class="btn btn-cancel" onclick={handleCancel}>Cancel</button>
+				<button class="btn btn-cancel" onclick={handleCancel}>{t('cancel', currentLang)}</button>
 			</div>
 		</div>
 	</div>

@@ -122,6 +122,14 @@ function createGameStore() {
 			const newState = { players: newOrder };
 			saveGameState(newState);
 			set(newState);
+		},
+		clearScoreboard: () => {
+			// Reset to one default player (startup state)
+			const newState = {
+				players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {} }]
+			};
+			saveGameState(newState);
+			set(newState);
 		}
 	};
 }

@@ -25,7 +25,7 @@ Status: ✅ Completed
 
 
 ## Story 2.2: Localization
-Status: ⏳ Pending
+Status: ✅ Completed
 
 ### Acceptance Criteria:
 - Language chooser in top right corner (right of the "clear" button). 
@@ -35,6 +35,24 @@ Status: ⏳ Pending
 - Set default language to "de"
 
 ### Technical Implementation
+
+### Testing:
+- Test the language choosing
+
+## Story 2.3: Administrative functions
+Status: ⏳ Pending
+
+### Acceptance Criteria:
+- Create a Hamburger menu in the top right
+- move the "clear (scroeboard)" button and the language selector to the menu
+- Rename the "clear" button (now in the menu) to "new game"
+- Add another menu entry with the name "clear scorebaord"
+- Add another menu entry with the name "clear hisstory"
+
+### Technical Implementation
+- The "new game" label is the new label for the "clear" button, now moved to the menu
+- The new "clear scoreboard" function in the menu resets the player columns to the default/startup value (only one player)
+- Clear history removes the entries from the game history
 
 ### Testing:
 - Test the language choosing

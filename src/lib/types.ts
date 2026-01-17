@@ -38,25 +38,27 @@ export interface GameHistoryEntry {
 	results: GameResult[];
 }
 
-export const SCORE_CATEGORIES: { key: ScoreCategory | 'summary'; label: string }[] = [
-	{ key: 'ones', label: 'Ones' },
-	{ key: 'twos', label: 'Twos' },
-	{ key: 'threes', label: 'Threes' },
-	{ key: 'fours', label: 'Fours' },
-	{ key: 'fives', label: 'Fives' },
-	{ key: 'sixes', label: 'Sixes' },
-	{ key: 'summary', label: 'Sum' },
-	{ key: 'bonus', label: 'Bonus' },
-	{ key: 'onePair', label: 'One Pair' },
-	{ key: 'twoPairs', label: 'Two Pairs' },
-	{ key: 'threeOfAKind', label: 'Three of a Kind' },
-	{ key: 'fourOfAKind', label: 'Four of a Kind' },
-	{ key: 'smallStraight', label: 'Small Straight' },
-	{ key: 'largeStraight', label: 'Large Straight' },
-	{ key: 'fullHouse', label: 'Full House' },
-	{ key: 'chance', label: 'Chance' },
-	{ key: 'yatzy', label: 'Yatzy' }
+// Note: Labels are now handled by translations
+// This array defines the structure and order of categories
+export const SCORE_CATEGORIES: { key: ScoreCategory | 'summary' }[] = [
+	{ key: 'ones' },
+	{ key: 'twos' },
+	{ key: 'threes' },
+	{ key: 'fours' },
+	{ key: 'fives' },
+	{ key: 'sixes' },
+	{ key: 'summary' },
+	{ key: 'bonus' },
+	{ key: 'onePair' },
+	{ key: 'twoPairs' },
+	{ key: 'threeOfAKind' },
+	{ key: 'fourOfAKind' },
+	{ key: 'smallStraight' },
+	{ key: 'largeStraight' },
+	{ key: 'fullHouse' },
+	{ key: 'chance' },
+	{ key: 'yatzy' }
 ];
 
 export const BONUS_THRESHOLD = 63;
-export const BONUS_POINTS = 35;
+export const BONUS_POINTS = 25;

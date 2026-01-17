@@ -1,16 +1,19 @@
 <script lang="ts">
 	import { gameStore } from '../stores/gameStore';
+	import { languageStore } from '../stores/i18nStore';
 	import { SCORE_CATEGORIES, type ScoreCategory, type Player } from '../types';
 	import { calculateBonus, calculateTotal, calculateTopSectionTotal } from '../utils/scoreCalculator';
 	import { getPlayerColor } from '../utils/playerColors';
+	import { t } from '../utils/i18n';
+	import type { Translations } from '../utils/translations';
+	import { clearGameHistory } from '../utils/historyStorage';
 	import PlayerHeader from './PlayerHeader.svelte';
 	import ScoreCell from './ScoreCell.svelte';
-	import ClearDialog from './ClearDialog.svelte';
 	import ScoreEntryPopup from './ScoreEntryPopup.svelte';
 	import GameHistory from './GameHistory.svelte';
 	import PlayerNameEditPopup from './PlayerNameEditPopup.svelte';
+	import HamburgerMenu from './HamburgerMenu.svelte';
 
-	let showClearDialog = $state(false);
 	let playerNameEditState: {
 		isOpen: boolean;
 		playerId: string;
@@ -24,6 +27,33 @@
 	} | null = $state(null);
 
 	let players = $derived($gameStore.players);
+	// Make component reactive to language changes
+	let currentLang = $derived($languageStore);
+
+	// Get category label from translations
+	function getCategoryLabel(category: ScoreCategory | 'summary'): string {
+		if (category === 'summary') return t('sum', currentLang);
+		// Map category keys to translation keys
+		const translationMap: Record<ScoreCategory, keyof Translations> = {
+			ones: 'ones',
+			twos: 'twos',
+			threes: 'threes',
+			fours: 'fours',
+			fives: 'fives',
+			sixes: 'sixes',
+			bonus: 'bonus',
+			onePair: 'onePair',
+			twoPairs: 'twoPairs',
+			threeOfAKind: 'threeOfAKind',
+			fourOfAKind: 'fourOfAKind',
+			smallStraight: 'smallStraight',
+			largeStraight: 'largeStraight',
+			fullHouse: 'fullHouse',
+			chance: 'chance',
+			yatzy: 'yatzy'
+		};
+		return t(translationMap[category], currentLang);
+	}
 
 	function handleAddPlayer() {
 		gameStore.addPlayer();
@@ -71,7 +101,7 @@
 		if (category === 'bonus' || category === 'summary') {
 			return; // Bonus and summary are calculated, not editable
 		}
-		const categoryLabel = SCORE_CATEGORIES.find((c) => c.key === category)?.label || category;
+		const categoryLabel = getCategoryLabel(category);
 		popupState = {
 			isOpen: true,
 			playerId,
@@ -84,9 +114,6 @@
 		popupState = null;
 	}
 
-	function handleClear() {
-		showClearDialog = true;
-	}
 
 	let gameHistoryRef: GameHistory | null = $state(null);
 	let draggedPlayerId: string | null = $state(null);
@@ -126,17 +153,28 @@
 		draggedPlayerId = null;
 	}
 
-	function handleClearConfirm() {
+	function handleNewGame() {
 		gameStore.clearGame();
-		showClearDialog = false;
 		// Reload history after clearing
 		if (gameHistoryRef) {
 			gameHistoryRef.reload();
 		}
 	}
 
-	function handleClearCancel() {
-		showClearDialog = false;
+	function handleClearScoreboard() {
+		gameStore.clearScoreboard();
+		// Reload history after clearing
+		if (gameHistoryRef) {
+			gameHistoryRef.reload();
+		}
+	}
+
+	function handleClearHistory() {
+		clearGameHistory();
+		// Reload history after clearing
+		if (gameHistoryRef) {
+			gameHistoryRef.reload();
+		}
 	}
 
 	function getScore(player: Player, category: ScoreCategory | 'summary'): number | null | undefined {
@@ -152,10 +190,14 @@
 
 <div class="score-dashboard">
 	<div class="dashboard-header">
-		<h1>Yatzy Score Dashboard</h1>
+		<h1>{t('scoreDashboard', currentLang)}</h1>
 		<div class="header-actions">
-			<button class="btn btn-add" onclick={handleAddPlayer}>+ Add Player</button>
-			<button class="btn btn-clear" onclick={handleClear}>Clear</button>
+			<button class="btn btn-add" onclick={handleAddPlayer}>{t('addPlayer', currentLang)}</button>
+			<HamburgerMenu
+				onNewGame={handleNewGame}
+				onClearScoreboard={handleClearScoreboard}
+				onClearHistory={handleClearHistory}
+			/>
 		</div>
 	</div>
 
@@ -163,7 +205,7 @@
 		<table class="score-table">
 			<thead>
 				<tr>
-					<th class="category-col">Category</th>
+					<th class="category-col">{t('category', currentLang)}</th>
 					{#each players as player, index (player.id)}
 						<th
 							class="player-col"
@@ -183,9 +225,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each SCORE_CATEGORIES as { key: category, label } (category)}
+				{#each SCORE_CATEGORIES as { key: category } (category)}
 					<tr>
-						<td class="category-label">{label}</td>
+						<td class="category-label">{getCategoryLabel(category)}</td>
 						{#each players as player, playerIndex (player.id)}
 							{@const playerColor = getPlayerColor(playerIndex)}
 							<td class="score-cell-container">
@@ -215,7 +257,7 @@
 					</tr>
 				{/each}
 				<tr class="total-row">
-					<td class="category-label total-label">Total</td>
+					<td class="category-label total-label">{t('total', currentLang)}</td>
 					{#each players as player, playerIndex (player.id)}
 						{@const playerColor = getPlayerColor(playerIndex)}
 						<td
@@ -230,11 +272,6 @@
 		</table>
 	</div>
 
-	<ClearDialog
-		isOpen={showClearDialog}
-		onConfirm={handleClearConfirm}
-		onCancel={handleClearCancel}
-	/>
 
 	{#if popupState}
 		<ScoreEntryPopup
@@ -288,6 +325,7 @@
 
 	.header-actions {
 		display: flex;
+		align-items: center;
 		gap: 0.5rem;
 	}
 
@@ -309,14 +347,6 @@
 		background: #218838;
 	}
 
-	.btn-clear {
-		background: #dc3545;
-		color: white;
-	}
-
-	.btn-clear:hover {
-		background: #c82333;
-	}
 
 	.table-container {
 		overflow-x: auto;

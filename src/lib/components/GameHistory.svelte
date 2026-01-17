@@ -2,7 +2,12 @@
 	import { onMount } from 'svelte';
 	import { loadGameHistory, clearGameHistory } from '../utils/historyStorage';
 	import type { GameHistoryEntry } from '../types';
+	import { languageStore } from '../stores/i18nStore';
+	import { t } from '../utils/i18n';
 	import ClearDialog from './ClearDialog.svelte';
+
+	// Make component reactive to language changes
+	let currentLang = $derived($languageStore);
 
 	let history = $state<GameHistoryEntry[]>([]);
 	let showDeleteDialog = $state(false);
@@ -53,15 +58,15 @@
 {#if history.length > 0}
 	<div class="game-history">
 		<div class="history-header">
-			<h2>Game History</h2>
-			<button class="btn btn-delete" onclick={handleDeleteClick}>Delete History</button>
+			<h2>{t('gameHistory', currentLang)}</h2>
+			<button class="btn btn-delete" onclick={handleDeleteClick}>{t('deleteHistory', currentLang)}</button>
 		</div>
 		<div class="history-table-container">
 			<table class="history-table">
 				<thead>
 					<tr>
-						<th class="date-col">Date</th>
-						<th class="time-col">Time</th>
+						<th class="date-col">{t('date', currentLang)}</th>
+						<th class="time-col">{t('time', currentLang)}</th>
 						{#if history.length > 0}
 							{#each history[0].results as result, index (index)}
 								<th class="player-col">{result.playerName}</th>
@@ -85,9 +90,9 @@
 
 		<ClearDialog
 			isOpen={showDeleteDialog}
-			title="Delete Game History"
-			message="Are you sure you want to delete all game history? This action cannot be undone."
-			confirmText="Delete"
+			title={t('deleteGameHistory', currentLang)}
+			message={t('deleteHistoryConfirmation', currentLang)}
+			confirmText={t('delete', currentLang)}
 			onConfirm={handleDeleteConfirm}
 			onCancel={handleDeleteCancel}
 		/>

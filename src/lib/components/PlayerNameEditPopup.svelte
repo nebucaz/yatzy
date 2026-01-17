@@ -1,4 +1,10 @@
 <script lang="ts">
+	import { languageStore } from '../stores/i18nStore';
+	import { t } from '../utils/i18n';
+
+	// Make component reactive to language changes
+	let currentLang = $derived($languageStore);
+
 	interface Props {
 		isOpen: boolean;
 		playerName: string;
@@ -66,31 +72,31 @@
 		tabindex="-1"
 	>
 		<div class="popup" onclick={(e) => e.stopPropagation()} role="none">
-			<h3 id="popup-title">Edit Player Name</h3>
+			<h3 id="popup-title">{t('editPlayerName', currentLang)}</h3>
 
 			<div class="input-container">
-				<label for="player-name-input">Player Name:</label>
+				<label for="player-name-input">{t('playerName', currentLang)}</label>
 				<input
 					id="player-name-input"
 					type="text"
 					bind:value={editName}
 					onkeydown={handleKeydown}
 					class="name-input"
-					placeholder="Enter player name"
+					placeholder={t('enterPlayerName', currentLang)}
 				/>
 			</div>
 
 			<div class="popup-actions">
 				<button class="btn btn-remove" onclick={handleRemove}>
-					{showRemoveConfirm ? 'Confirm Remove' : 'Remove Player'}
+					{showRemoveConfirm ? t('confirmRemove', currentLang) : t('removePlayer', currentLang)}
 				</button>
-				<button class="btn btn-cancel" onclick={handleCancel}>Cancel</button>
-				<button class="btn btn-save" onclick={handleSave}>Save</button>
+				<button class="btn btn-cancel" onclick={handleCancel}>{t('cancel', currentLang)}</button>
+				<button class="btn btn-save" onclick={handleSave}>{t('save', currentLang)}</button>
 			</div>
 
 			{#if showRemoveConfirm}
 				<div class="remove-warning">
-					<p>Are you sure you want to remove this player? This action cannot be undone.</p>
+					<p>{t('removePlayerConfirmation', currentLang)}</p>
 				</div>
 			{/if}
 		</div>
