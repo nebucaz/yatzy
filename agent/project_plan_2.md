@@ -40,7 +40,7 @@ Status: ✅ Completed
 - Test the language choosing
 
 ## Story 2.3: Administrative functions
-Status: ⏳ Pending
+Status: ✅ Completed
 
 ### Acceptance Criteria:
 - Create a Hamburger menu in the top right
@@ -56,3 +56,15 @@ Status: ⏳ Pending
 
 ### Testing:
 - Test the language choosing
+
+## Story 2.4: Preserve player column color when moving
+Status: ⏳ Pending
+
+### Acceptance Criteria:
+- When moving the player column, the current color of the column should be preserved.
+- 
+
+## Story 2.5: Preselected values for "two pairs"
+Status: ⏳ Pending
+
+6,8,10,12,14,16,18,20,22

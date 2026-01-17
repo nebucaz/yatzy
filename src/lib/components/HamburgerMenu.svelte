@@ -180,11 +180,13 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 		min-width: 200px;
 		z-index: 1000;
-		overflow: hidden;
+		overflow: visible;
 	}
 
 	.menu-section {
 		padding: 0.5rem;
+		overflow: visible;
+		position: relative;
 	}
 
 	.menu-divider {
