@@ -103,6 +103,7 @@ Status: ✅ Completed
 
 
 ## Story 2.8 Adapted value entry 
+Status: ✅ Completed
 
 ### Acceptance Criteria:
 - We should constraint the entry of "chance" to a point range between 5 and 30 points

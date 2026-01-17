@@ -26,13 +26,77 @@
 	let hasValue = $derived(typeof currentScore === 'number');
 
 	let possibleValues = $derived(getPossibleValues(category));
-	let useNumberPad = $derived(possibleValues === null); // || possibleValues.length > 9);
+	
+	// Determine entry mode
+	let useDiceIcons = $derived(['onePair', 'threeOfAKind', 'fourOfAKind'].includes(category));
+	let useMultipliers = $derived(['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].includes(category));
+	let useNumberPad = $derived(possibleValues === null && !useDiceIcons && !useMultipliers);
+	let isChance = $derived(category === 'chance');
+	
+	let validationError = $state('');
+
+	// Dice icons: ⚀ ⚁ ⚂ ⚃ ⚄ ⚅
+	const diceIcons = [
+		{ value: 1, icon: '⚀' },
+		{ value: 2, icon: '⚁' },
+		{ value: 3, icon: '⚂' },
+		{ value: 4, icon: '⚃' },
+		{ value: 5, icon: '⚄' },
+		{ value: 6, icon: '⚅' }
+	];
+
+	// Multipliers: 1x, 2x, 3x, 4x, 5x
+	const multipliers = [1, 2, 3, 4, 5];
+
+	// Get base value for multiplier calculation
+	function getCategoryBaseValue(category: ScoreCategory): number {
+		switch (category) {
+			case 'ones': return 1;
+			case 'twos': return 2;
+			case 'threes': return 3;
+			case 'fours': return 4;
+			case 'fives': return 5;
+			case 'sixes': return 6;
+			default: return 0;
+		}
+	}
+
+	// Calculate value for dice icon selection
+	function calculateDiceValue(diceValue: number, category: ScoreCategory): number {
+		switch (category) {
+			case 'onePair':
+				return diceValue * 2;
+			case 'threeOfAKind':
+				return diceValue * 3;
+			case 'fourOfAKind':
+				return diceValue * 4;
+			default:
+				return 0;
+		}
+	}
+
+	// Calculate value for multiplier selection
+	function calculateMultiplierValue(multiplier: number, category: ScoreCategory): number {
+		const baseValue = getCategoryBaseValue(category);
+		return baseValue * multiplier;
+	}
+
+	function handleDiceIconSelect(diceValue: number) {
+		const calculatedValue = calculateDiceValue(diceValue, category);
+		onSetScore(calculatedValue);
+	}
+
+	function handleMultiplierSelect(multiplier: number) {
+		const calculatedValue = calculateMultiplierValue(multiplier, category);
+		onSetScore(calculatedValue);
+	}
 
 	function handleValueSelect(value: number) {
 		onSetScore(value);
 	}
 
 	function handleNumberPadInput(digit: string) {
+		validationError = ''; // Clear validation error on input
 		if (digit === 'backspace') {
 			numberPadValue = numberPadValue.slice(0, -1);
 		} else if (digit === 'clear') {
@@ -44,10 +108,25 @@
 
 	function handleNumberPadConfirm() {
 		const value = parseInt(numberPadValue, 10);
-		if (!isNaN(value) && value >= 0) {
-			onSetScore(value);
-			numberPadValue = '';
+		if (isNaN(value)) {
+			validationError = 'Please enter a valid number';
+			return;
 		}
+		
+		// Validate chance entry (5-30 range)
+		if (isChance) {
+			if (value < 5 || value > 30) {
+				validationError = 'Chance value must be between 5 and 30';
+				return;
+			}
+		} else if (value < 0) {
+			validationError = 'Value must be 0 or greater';
+			return;
+		}
+		
+		onSetScore(value);
+		numberPadValue = '';
+		validationError = '';
 	}
 
 	function handleSkip() {
@@ -95,10 +174,57 @@
 		<div class="popup" onclick={(e) => e.stopPropagation()} role="none">
 			<h3 id="popup-title">{categoryLabel}</h3>
 
-			{#if useNumberPad}
-				<!-- Number pad for arbitrary values -->
+			{#if useDiceIcons}
+				<!-- Dice icon selection for one pair, three of a kind, four of a kind -->
+				<div class="dice-icons-container">
+					<div class="dice-icons">
+						{#each diceIcons as dice}
+							<button
+								class="dice-icon-btn"
+								onclick={() => handleDiceIconSelect(dice.value)}
+								title={dice.value.toString()}
+							>
+								<span class="dice-icon-large">{dice.icon}</span>
+							</button>
+						{/each}
+					</div>
+					<div class="dice-help-text">
+						{#if category === 'onePair'}
+							Select a dice value (value = dice × 2)
+						{:else if category === 'threeOfAKind'}
+							Select a dice value (value = dice × 3)
+						{:else if category === 'fourOfAKind'}
+							Select a dice value (value = dice × 4)
+						{/if}
+					</div>
+				</div>
+			{:else if useMultipliers}
+				<!-- Multiplier selection for ones, twos, threes, fours, fives, sixes -->
+				<div class="multipliers-container">
+					<div class="multipliers">
+						{#each multipliers as mult}
+							<button
+								class="multiplier-btn"
+								onclick={() => handleMultiplierSelect(mult)}
+							>
+								{mult}×
+							</button>
+						{/each}
+					</div>
+					<div class="multiplier-help-text">
+						Select a multiplier (value = {getCategoryBaseValue(category)} × multiplier)
+					</div>
+				</div>
+			{:else if useNumberPad}
+				<!-- Number pad for arbitrary values (chance, bonus, etc.) -->
 				<div class="number-pad-container">
 					<div class="number-display">{numberPadValue || '0'}</div>
+					{#if validationError}
+						<div class="validation-error">{validationError}</div>
+					{/if}
+					{#if isChance}
+						<div class="chance-hint">Enter a value between 5 and 30</div>
+					{/if}
 					<div class="number-pad">
 						<button class="num-btn" onclick={() => handleNumberPadInput('1')}>1</button>
 						<button class="num-btn" onclick={() => handleNumberPadInput('2')}>2</button>
@@ -309,6 +435,105 @@
 
 	.btn-cancel:hover {
 		background: #c82333;
+	}
+
+	.dice-icons-container {
+		margin-bottom: 1rem;
+	}
+
+	.dice-icons {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.75rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.dice-icon-btn {
+		padding: 0.1rem;
+		font-size: 2rem;
+		border: 2px solid #007bff;
+		background: white;
+		color: #007bff;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: auto;
+	}
+
+	.dice-icon-btn:hover {
+		background: #007bff;
+		transform: scale(1.05);
+	}
+
+	.dice-icon-large {
+		font-size: 4rem;
+		line-height: 1;
+	}
+
+	.dice-help-text {
+		text-align: center;
+		font-size: 0.9rem;
+		color: #6c757d;
+		margin-top: 0.5rem;
+	}
+
+	.multipliers-container {
+		margin-bottom: 1rem;
+	}
+
+	.multipliers {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.multiplier-btn {
+		padding: 1rem;
+		font-size: 1.5rem;
+		font-weight: 600;
+		border: 2px solid #007bff;
+		background: white;
+		color: #007bff;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.2s;
+		min-height: 70px;
+	}
+
+	.multiplier-btn:hover {
+		background: #007bff;
+		color: white;
+		transform: scale(1.05);
+	}
+
+	.multiplier-help-text {
+		text-align: center;
+		font-size: 0.9rem;
+		color: #6c757d;
+		margin-top: 0.5rem;
+	}
+
+	.validation-error {
+		color: #dc3545;
+		font-size: 0.9rem;
+		text-align: center;
+		margin-bottom: 0.5rem;
+		padding: 0.5rem;
+		background: #f8d7da;
+		border: 1px solid #f5c6cb;
+		border-radius: 4px;
+	}
+
+	.chance-hint {
+		text-align: center;
+		font-size: 0.85rem;
+		color: #6c757d;
+		margin-bottom: 0.5rem;
+		font-style: italic;
 	}
 </style>
 
