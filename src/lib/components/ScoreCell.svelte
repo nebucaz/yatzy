@@ -97,10 +97,6 @@
 		background: #f5f5f5;
 	}
 
-	.score-cell.has-player-color {
-		border-color: currentColor;
-	}
-
 	.score-cell.has-player-color:hover {
 		opacity: 0.9;
 	}

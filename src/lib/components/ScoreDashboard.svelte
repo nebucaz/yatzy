@@ -30,6 +30,26 @@
 	// Make component reactive to language changes
 	let currentLang = $derived($languageStore);
 
+	// Get dice icon for top section categories
+	function getDiceIcon(category: ScoreCategory | 'summary'): string | null {
+		switch (category) {
+			case 'ones':
+				return '⚀'; // Die Face-1
+			case 'twos':
+				return '⚁'; // Die Face-2
+			case 'threes':
+				return '⚂'; // Die Face-3
+			case 'fours':
+				return '⚃'; // Die Face-4
+			case 'fives':
+				return '⚄'; // Die Face-5
+			case 'sixes':
+				return '⚅'; // Die Face-6
+			default:
+				return null;
+		}
+	}
+
 	// Get category label from translations
 	function getCategoryLabel(category: ScoreCategory | 'summary'): string {
 		if (category === 'summary') return t('sum', currentLang);
@@ -227,8 +247,14 @@
 			</thead>
 			<tbody>
 				{#each SCORE_CATEGORIES as { key: category } (category)}
+					{@const diceIcon = getDiceIcon(category)}
 					<tr>
-						<td class="category-label">{getCategoryLabel(category)}</td>
+						<td class="category-label">
+							{#if diceIcon}
+								<span class="dice-icon">{diceIcon}</span>
+							{/if}
+							{getCategoryLabel(category)}
+						</td>
 						{#each players as player (player.id)}
 							{@const colorIndex = player.colorIndex ?? 0}
 							{@const playerColor = getPlayerColor(colorIndex)}
@@ -310,6 +336,7 @@
 		padding: 1rem;
 		max-width: 1400px;
 		margin: 0 auto;
+		--player-column-width: 100px;
 	}
 
 	.dashboard-header {
@@ -371,9 +398,9 @@
 	}
 
 	.player-col {
-		width: 150px !important;
-		max-width: 150px !important;
-		min-width: 150px !important;
+		width: var(--player-column-width) !important;
+		max-width: var(--player-column-width) !important;
+		min-width: var(--player-column-width) !important;
 		position: relative;
 		box-sizing: border-box;
 		overflow: hidden;
@@ -397,14 +424,23 @@
 		font-weight: 500;
 		border: 1px solid #ddd;
 		background: #f8f9fa;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.dice-icon {
+		font-size: 1.5rem;
+		line-height: 1;
+		display: inline-block;
 	}
 
 	.score-cell-container {
 		padding: 0;
 		border: 1px solid #ddd;
-		width: 150px !important;
-		max-width: 150px !important;
-		min-width: 150px !important;
+		width: var(--player-column-width) !important;
+		max-width: var(--player-column-width) !important;
+		min-width: var(--player-column-width) !important;
 		box-sizing: border-box;
 	}
 
@@ -436,9 +472,9 @@
 		font-size: 1.1rem;
 		border: 1px solid #ddd;
 		background: #e9ecef;
-		width: 150px !important;
-		max-width: 150px !important;
-		min-width: 150px !important;
+		width: var(--player-column-width) !important;
+		max-width: var(--player-column-width) !important;
+		min-width: var(--player-column-width) !important;
 		box-sizing: border-box;
 	}
 

@@ -29,6 +29,7 @@ export interface Translations {
 	// Buttons
 	addPlayer: string;
 	clear: string;
+	clearValue: string;
 	newGame: string;
 	clearScoreboard: string;
 	clearHistory: string;
@@ -87,6 +88,7 @@ export const translations: Record<Language, Translations> = {
 		time: 'Time',
 		addPlayer: '+ Add Player',
 		clear: 'Clear',
+		clearValue: 'Clear Value',
 		newGame: 'New Game',
 		clearScoreboard: 'Clear Scoreboard',
 		clearHistory: 'Clear History',
@@ -137,6 +139,7 @@ export const translations: Record<Language, Translations> = {
 		time: 'Uhrzeit',
 		addPlayer: '+ Spieler hinzufügen',
 		clear: 'Löschen',
+		clearValue: 'Wert löschen',
 		newGame: 'Neues Spiel',
 		clearScoreboard: 'Punkte-Tabelle zurücksetzen',
 		clearHistory: 'Verlauf löschen',
@@ -187,6 +190,7 @@ export const translations: Record<Language, Translations> = {
 		time: 'Hora',
 		addPlayer: '+ Añadir Jugador',
 		clear: 'Limpiar',
+		clearValue: 'Limpiar Valor',
 		newGame: 'Nuevo Juego',
 		clearScoreboard: 'Limpiar Tablero',
 		clearHistory: 'Limpiar Historial',
@@ -237,6 +241,7 @@ export const translations: Record<Language, Translations> = {
 		time: 'Heure',
 		addPlayer: '+ Ajouter un Joueur',
 		clear: 'Effacer',
+		clearValue: 'Effacer la Valeur',
 		newGame: 'Nouvelle Partie',
 		clearScoreboard: 'Réinitialiser le Tableau',
 		clearHistory: 'Effacer l\'Historique',
@@ -287,6 +292,7 @@ export const translations: Record<Language, Translations> = {
 		time: 'Ora',
 		addPlayer: '+ Aggiungi Giocatore',
 		clear: 'Cancella',
+		clearValue: 'Cancella Valore',
 		newGame: 'Nuova Partita',
 		clearScoreboard: 'Azzera Tabellone',
 		clearHistory: 'Cancella Cronologia',

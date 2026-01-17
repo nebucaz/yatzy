@@ -22,6 +22,8 @@
 	let numberPadValue = $state('');
 	// A score is "skipped" if it's explicitly set to null (not undefined)
 	let isSkipped = $derived(currentScore === null);
+	// A score has a value if it's a number (not undefined, not null)
+	let hasValue = $derived(typeof currentScore === 'number');
 
 	let possibleValues = $derived(getPossibleValues(category));
 	let useNumberPad = $derived(possibleValues === null); // || possibleValues.length > 9);
@@ -54,6 +56,11 @@
 
 	function handleUnskip() {
 		// To unskip, we pass undefined which removes the score from the record
+		onSetScore(undefined);
+	}
+
+	function handleClearValue() {
+		// Clear the entered value by setting it to undefined
 		onSetScore(undefined);
 	}
 
@@ -127,6 +134,9 @@
 			<div class="popup-actions">
 				{#if isSkipped}
 					<button class="btn btn-unskip" onclick={handleUnskip}>{t('unskip', currentLang)}</button>
+				{:else if hasValue}
+					<button class="btn btn-clear-value" onclick={handleClearValue}>{t('clearValue', currentLang)}</button>
+					<button class="btn btn-skip" onclick={handleSkip}>{t('skip', currentLang)}</button>
 				{:else}
 					<button class="btn btn-skip" onclick={handleSkip}>{t('skip', currentLang)}</button>
 				{/if}
@@ -281,6 +291,15 @@
 
 	.btn-unskip:hover {
 		background: #e0a800;
+	}
+
+	.btn-clear-value {
+		background: #ff9800;
+		color: white;
+	}
+
+	.btn-clear-value:hover {
+		background: #f57c00;
 	}
 
 	.btn-cancel {
