@@ -76,3 +76,13 @@ Status: ✅ Completed
 - The value selector-popup for the "two pairs" result cells whould show the predefined values  6,8,10,12,14,16,18,20,22
 - The ​​​value selector-popup for the "full house" result cells whould show the predefined values 7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28
  
+## Story 2.6: Ranking
+Status: ✅ Completed
+
+### Acceptance Criteria:
+- The game is over, as soon as all result cells of all players are filled with a value or have been skipped
+- Show a "ranking" button below the score board, when the game is over. Disable the button, while the gamie is running.
+- Show a popup with the ranking at the end of the game. 
+- The ranking-popup has a button to dismiss the popup. 
+- In the hamburger menu, show a "overall ranking" entry.
+- The "overall ranking" also displays the ranking-popup but the ranking table is calculated from the results in the game history table

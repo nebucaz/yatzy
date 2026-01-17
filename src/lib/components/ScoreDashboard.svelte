@@ -6,13 +6,14 @@
 	import { getPlayerColor } from '../utils/playerColors';
 	import { t } from '../utils/i18n';
 	import type { Translations } from '../utils/translations';
-	import { clearGameHistory } from '../utils/historyStorage';
+	import { clearGameHistory, loadGameHistory } from '../utils/historyStorage';
 	import PlayerHeader from './PlayerHeader.svelte';
 	import ScoreCell from './ScoreCell.svelte';
 	import ScoreEntryPopup from './ScoreEntryPopup.svelte';
 	import GameHistory from './GameHistory.svelte';
 	import PlayerNameEditPopup from './PlayerNameEditPopup.svelte';
 	import HamburgerMenu from './HamburgerMenu.svelte';
+	import RankingPopup from './RankingPopup.svelte';
 
 	let playerNameEditState: {
 		isOpen: boolean;
@@ -24,6 +25,12 @@
 		playerId: string;
 		category: ScoreCategory;
 		categoryLabel: string;
+	} | null = $state(null);
+
+	let rankingPopupState: {
+		isOpen: boolean;
+		title: string;
+		rankings: Array<{ rank: number; playerName: string; total: number; colorIndex?: number }>;
 	} | null = $state(null);
 
 	let players = $derived($gameStore.players);
@@ -48,6 +55,27 @@
 			default:
 				return null;
 		}
+	}
+
+	// Check if game is over (all cells filled or skipped for all players)
+	function isGameOver(): boolean {
+		if (players.length === 0) return false;
+		
+		// All categories except 'summary' and 'bonus' need to be filled
+		const editableCategories: ScoreCategory[] = [
+			'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
+			'onePair', 'twoPairs', 'threeOfAKind', 'fourOfAKind',
+			'smallStraight', 'largeStraight', 'fullHouse', 'chance', 'yatzy'
+		];
+
+		// Check if all players have all categories filled or skipped
+		return players.every((player) => {
+			return editableCategories.every((category) => {
+				const score = player.scores[category];
+				// Game is over if score is defined (either number or null for skipped)
+				return score !== undefined;
+			});
+		});
 	}
 
 	// Get category label from translations
@@ -134,6 +162,84 @@
 		popupState = null;
 	}
 
+	function handleShowRanking() {
+		if (!isGameOver()) return;
+		
+		// Calculate rankings from current game
+		const rankings = players
+			.map((player) => ({
+				playerName: player.name,
+				total: calculateTotal(player),
+				colorIndex: player.colorIndex ?? 0
+			}))
+			.sort((a, b) => b.total - a.total) // Sort descending by total
+			.map((entry, index) => ({
+				...entry,
+				rank: index + 1
+			}));
+
+		rankingPopupState = {
+			isOpen: true,
+			title: t('ranking', currentLang),
+			rankings
+		};
+	}
+
+	function handleCloseRanking() {
+		rankingPopupState = null;
+	}
+
+	function handleShowOverallRanking() {
+		// Calculate overall ranking from game history
+		const history = loadGameHistory();
+		
+		// Aggregate totals by player name across all games
+		const playerTotals = new Map<string, { total: number; games: number; colorIndex?: number }>();
+		
+		history.forEach((entry) => {
+			entry.results.forEach((result) => {
+				const existing = playerTotals.get(result.playerName);
+				if (existing) {
+					existing.total += result.total;
+					existing.games += 1;
+				} else {
+					// Try to find color index from current players if they match
+					const currentPlayer = players.find((p) => p.name === result.playerName);
+					playerTotals.set(result.playerName, {
+						total: result.total,
+						games: 1,
+						colorIndex: currentPlayer?.colorIndex
+					});
+				}
+			});
+		});
+
+		// Convert to array and calculate average, then sort by average
+		const rankings = Array.from(playerTotals.entries())
+			.map(([playerName, data]) => ({
+				playerName,
+				total: data.games > 0 ? Math.round(data.total / data.games) : 0, // Average score
+				colorIndex: data.colorIndex
+			}))
+			.sort((a, b) => b.total - a.total) // Sort descending by average
+			.map((entry, index) => ({
+				...entry,
+				rank: index + 1
+			}));
+
+		if (rankings.length === 0) {
+			// Show message that no history exists
+			alert(t('noGameHistory', currentLang) || 'No game history available');
+			return;
+		}
+
+		rankingPopupState = {
+			isOpen: true,
+			title: t('overallRanking', currentLang),
+			rankings
+		};
+	}
+
 
 	let gameHistoryRef: GameHistory | null = $state(null);
 	let draggedPlayerId: string | null = $state(null);
@@ -213,11 +319,12 @@
 		<h1>{t('scoreDashboard', currentLang)}</h1>
 		<div class="header-actions">
 			<button class="btn btn-add" onclick={handleAddPlayer}>{t('addPlayer', currentLang)}</button>
-			<HamburgerMenu
-				onNewGame={handleNewGame}
-				onClearScoreboard={handleClearScoreboard}
-				onClearHistory={handleClearHistory}
-			/>
+		<HamburgerMenu
+			onNewGame={handleNewGame}
+			onClearScoreboard={handleClearScoreboard}
+			onClearHistory={handleClearHistory}
+			onShowOverallRanking={handleShowOverallRanking}
+		/>
 		</div>
 	</div>
 
@@ -301,6 +408,16 @@
 		</table>
 	</div>
 
+	<div class="ranking-button-container">
+		<button
+			class="btn btn-ranking"
+			class:disabled={!isGameOver()}
+			onclick={handleShowRanking}
+			disabled={!isGameOver()}
+		>
+			{t('ranking', currentLang)}
+		</button>
+	</div>
 
 	{#if popupState}
 		<ScoreEntryPopup
@@ -325,6 +442,15 @@
 			onSave={handleSavePlayerName}
 			onRemove={handleRemovePlayer}
 			onCancel={handleCancelPlayerNameEdit}
+		/>
+	{/if}
+
+	{#if rankingPopupState}
+		<RankingPopup
+			isOpen={rankingPopupState.isOpen}
+			title={rankingPopupState.title}
+			rankings={rankingPopupState.rankings}
+			onClose={handleCloseRanking}
 		/>
 	{/if}
 
@@ -412,6 +538,34 @@
 
 	.player-col[draggable='true'] {
 		cursor: move;
+	}
+
+	.ranking-button-container {
+		margin-top: 1.5rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	.btn-ranking {
+		padding: 0.75rem 2rem;
+		font-size: 1rem;
+		font-weight: 600;
+		background: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-ranking:hover:not(.disabled) {
+		background: #0056b3;
+	}
+
+	.btn-ranking.disabled {
+		background: #6c757d;
+		cursor: not-allowed;
+		opacity: 0.6;
 	}
 
 	.player-col[draggable='true']:hover {

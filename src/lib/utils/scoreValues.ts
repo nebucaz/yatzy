@@ -38,7 +38,7 @@ export function getPossibleValues(category: ScoreCategory): number[] | null {
 			return [15];
 		case 'largeStraight':
 			// Large straight: fixed value 25
-			return [25];
+			return [20];
 		case 'fullHouse':
 			// Full house: predefined values 7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28
 			return [7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28];

@@ -25,6 +25,9 @@ export interface Translations {
 	category: string;
 	date: string;
 	time: string;
+	rank: string;
+	player: string;
+	close: string;
 
 	// Buttons
 	addPlayer: string;
@@ -49,6 +52,9 @@ export interface Translations {
 	clearScoreDashboard: string;
 	deleteGameHistory: string;
 	gameHistory: string;
+	ranking: string;
+	overallRanking: string;
+	noGameHistory: string;
 
 	// Labels
 	playerName: string;
@@ -86,6 +92,9 @@ export const translations: Record<Language, Translations> = {
 		category: 'Category',
 		date: 'Date',
 		time: 'Time',
+		rank: 'Rank',
+		player: 'Player',
+		close: 'Close',
 		addPlayer: '+ Add Player',
 		clear: 'Clear',
 		clearValue: 'Clear Value',
@@ -106,6 +115,9 @@ export const translations: Record<Language, Translations> = {
 		clearScoreDashboard: 'Clear Score Dashboard',
 		deleteGameHistory: 'Delete Game History',
 		gameHistory: 'Game History',
+		ranking: 'Ranking',
+		overallRanking: 'Overall Ranking',
+		noGameHistory: 'No game history available',
 		playerName: 'Player Name:',
 		enterPlayerName: 'Enter player name',
 		clearConfirmation: 'Are you sure you want to clear all scores? This action cannot be undone.',
@@ -128,8 +140,8 @@ export const translations: Record<Language, Translations> = {
 		twoPairs: 'Zwei Paare',
 		threeOfAKind: 'Drei Gleiche',
 		fourOfAKind: 'Vier Gleiche',
-		smallStraight: 'Kleine Straße',
-		largeStraight: 'Große Straße',
+		smallStraight: 'Kleine Strasse',
+		largeStraight: 'Grosse Strasse',
 		fullHouse: 'Full House',
 		chance: 'Chance',
 		yatzy: 'Yatzy',
@@ -137,6 +149,9 @@ export const translations: Record<Language, Translations> = {
 		category: 'Kategorie',
 		date: 'Datum',
 		time: 'Uhrzeit',
+		rank: 'Rang',
+		player: 'Spieler',
+		close: 'Schließen',
 		addPlayer: '+ Spieler hinzufügen',
 		clear: 'Löschen',
 		clearValue: 'Wert löschen',
@@ -144,8 +159,8 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboard: 'Punkte-Tabelle zurücksetzen',
 		clearHistory: 'Verlauf löschen',
 		confirm: 'Bestätigen',
-		skip: 'Überspringen',
-		unskip: 'Nicht überspringen',
+		skip: 'Streichen',
+		unskip: 'Nicht streichen',
 		cancel: 'Abbrechen',
 		save: 'Speichern',
 		delete: 'Löschen',
@@ -157,6 +172,9 @@ export const translations: Record<Language, Translations> = {
 		clearScoreDashboard: 'Punkte-Tabelle löschen',
 		deleteGameHistory: 'Spielverlauf löschen',
 		gameHistory: 'Spielverlauf',
+		ranking: 'Rangliste',
+		overallRanking: 'Gesamtrangliste',
+		noGameHistory: 'Kein Spielverlauf verfügbar',
 		playerName: 'Spielername:',
 		enterPlayerName: 'Spielername eingeben',
 		clearConfirmation: 'Sind Sie sicher, dass Sie alle Punkte löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
@@ -188,6 +206,9 @@ export const translations: Record<Language, Translations> = {
 		category: 'Categoría',
 		date: 'Fecha',
 		time: 'Hora',
+		rank: 'Rango',
+		player: 'Jugador',
+		close: 'Cerrar',
 		addPlayer: '+ Añadir Jugador',
 		clear: 'Limpiar',
 		clearValue: 'Limpiar Valor',
@@ -208,6 +229,9 @@ export const translations: Record<Language, Translations> = {
 		clearScoreDashboard: 'Limpiar Tablero de Puntos',
 		deleteGameHistory: 'Eliminar Historial de Juegos',
 		gameHistory: 'Historial de Juegos',
+		ranking: 'Clasificación',
+		overallRanking: 'Clasificación General',
+		noGameHistory: 'No hay historial de juegos disponible',
 		playerName: 'Nombre del Jugador:',
 		enterPlayerName: 'Ingrese el nombre del jugador',
 		clearConfirmation: '¿Está seguro de que desea limpiar todos los puntos? Esta acción no se puede deshacer.',
@@ -239,6 +263,9 @@ export const translations: Record<Language, Translations> = {
 		category: 'Catégorie',
 		date: 'Date',
 		time: 'Heure',
+		rank: 'Rang',
+		player: 'Joueur',
+		close: 'Fermer',
 		addPlayer: '+ Ajouter un Joueur',
 		clear: 'Effacer',
 		clearValue: 'Effacer la Valeur',
@@ -259,6 +286,9 @@ export const translations: Record<Language, Translations> = {
 		clearScoreDashboard: 'Effacer le Tableau de Scores',
 		deleteGameHistory: 'Supprimer l\'Historique des Parties',
 		gameHistory: 'Historique des Parties',
+		ranking: 'Classement',
+		overallRanking: 'Classement Général',
+		noGameHistory: 'Aucun historique de parties disponible',
 		playerName: 'Nom du Joueur:',
 		enterPlayerName: 'Entrez le nom du joueur',
 		clearConfirmation: 'Êtes-vous sûr de vouloir effacer tous les scores? Cette action ne peut pas être annulée.',
@@ -290,6 +320,9 @@ export const translations: Record<Language, Translations> = {
 		category: 'Categoria',
 		date: 'Data',
 		time: 'Ora',
+		rank: 'Posizione',
+		player: 'Giocatore',
+		close: 'Chiudi',
 		addPlayer: '+ Aggiungi Giocatore',
 		clear: 'Cancella',
 		clearValue: 'Cancella Valore',
@@ -310,6 +343,9 @@ export const translations: Record<Language, Translations> = {
 		clearScoreDashboard: 'Cancella Tabellone Punti',
 		deleteGameHistory: 'Elimina Cronologia Giochi',
 		gameHistory: 'Cronologia Giochi',
+		ranking: 'Classifica',
+		overallRanking: 'Classifica Generale',
+		noGameHistory: 'Nessuna cronologia di giochi disponibile',
 		playerName: 'Nome Giocatore:',
 		enterPlayerName: 'Inserisci nome giocatore',
 		clearConfirmation: 'Sei sicuro di voler cancellare tutti i punti? Questa azione non può essere annullata.',
