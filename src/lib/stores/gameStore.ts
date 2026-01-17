@@ -3,6 +3,7 @@ import type { Player, ScoreCategory, GameState, GameHistoryEntry, GameResult } f
 import { loadGameState, saveGameState } from '../utils/storage';
 import { saveGameHistory } from '../utils/historyStorage';
 import { calculateTotal } from '../utils/scoreCalculator';
+import { PLAYER_COLORS } from '../utils/playerColors';
 
 function createGameStore() {
 	const { subscribe, set, update } = writable<GameState>({ players: [] });
@@ -16,23 +17,35 @@ function createGameStore() {
 		return currentState;
 	}
 
+	// Helper to assign color index to a player
+	function assignColorIndex(player: Player, index: number): Player {
+		if (player.colorIndex === undefined) {
+			return { ...player, colorIndex: index % PLAYER_COLORS.length };
+		}
+		return player;
+	}
+
 	// Load from localStorage on initialization
 	const initialState = loadGameState();
 	if (initialState.players.length > 0) {
-		set(initialState);
+		// Ensure all players have colorIndex assigned
+		const playersWithColors = initialState.players.map((p, idx) => assignColorIndex(p, idx));
+		set({ players: playersWithColors });
 	} else {
 		// Initialize with one player if empty
-		set({ players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {} }] });
+		set({ players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {}, colorIndex: 0 }] });
 	}
 
 	return {
 		subscribe,
 		addPlayer: () => {
 			update((state) => {
+				const nextColorIndex = state.players.length % PLAYER_COLORS.length;
 				const newPlayer: Player = {
 					id: crypto.randomUUID(),
 					name: `Player ${state.players.length + 1}`,
-					scores: {}
+					scores: {},
+					colorIndex: nextColorIndex
 				};
 				const newState = { players: [...state.players, newPlayer] };
 				saveGameState(newState);
@@ -126,7 +139,7 @@ function createGameStore() {
 		clearScoreboard: () => {
 			// Reset to one default player (startup state)
 			const newState = {
-				players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {} }]
+				players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {}, colorIndex: 0 }]
 			};
 			saveGameState(newState);
 			set(newState);

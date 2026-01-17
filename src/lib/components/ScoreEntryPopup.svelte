@@ -24,7 +24,7 @@
 	let isSkipped = $derived(currentScore === null);
 
 	let possibleValues = $derived(getPossibleValues(category));
-	let useNumberPad = $derived(possibleValues === null || possibleValues.length > 9);
+	let useNumberPad = $derived(possibleValues === null); // || possibleValues.length > 9);
 
 	function handleValueSelect(value: number) {
 		onSetScore(value);

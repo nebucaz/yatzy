@@ -206,7 +206,8 @@
 			<thead>
 				<tr>
 					<th class="category-col">{t('category', currentLang)}</th>
-					{#each players as player, index (player.id)}
+					{#each players as player (player.id)}
+						{@const colorIndex = player.colorIndex ?? 0}
 						<th
 							class="player-col"
 							draggable="true"
@@ -217,7 +218,7 @@
 						>
 							<PlayerHeader
 								{player}
-								playerIndex={index}
+								playerIndex={colorIndex}
 								onEdit={handlePlayerHeaderClick}
 							/>
 						</th>
@@ -228,8 +229,9 @@
 				{#each SCORE_CATEGORIES as { key: category } (category)}
 					<tr>
 						<td class="category-label">{getCategoryLabel(category)}</td>
-						{#each players as player, playerIndex (player.id)}
-							{@const playerColor = getPlayerColor(playerIndex)}
+						{#each players as player (player.id)}
+							{@const colorIndex = player.colorIndex ?? 0}
+							{@const playerColor = getPlayerColor(colorIndex)}
 							<td class="score-cell-container">
 								{#if category === 'summary'}
 									<div
@@ -258,8 +260,9 @@
 				{/each}
 				<tr class="total-row">
 					<td class="category-label total-label">{t('total', currentLang)}</td>
-					{#each players as player, playerIndex (player.id)}
-						{@const playerColor = getPlayerColor(playerIndex)}
+					{#each players as player (player.id)}
+						{@const colorIndex = player.colorIndex ?? 0}
+						{@const playerColor = getPlayerColor(colorIndex)}
 						<td
 							class="total-cell"
 							style="background-color: {playerColor.cell}; color: {playerColor.text};"

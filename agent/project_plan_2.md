@@ -57,14 +57,22 @@ Status: ✅ Completed
 ### Testing:
 - Test the language choosing
 
-## Story 2.4: Preserve player column color when moving
-Status: ⏳ Pending
+## Story 2.4: Preserve column color when dragging colums
+Status: ✅ Completed
 
 ### Acceptance Criteria:
 - When moving the player column, the current color of the column should be preserved.
-- 
 
-## Story 2.5: Preselected values for "two pairs"
-Status: ⏳ Pending
+### Technical Implementation
+- n/a
 
-6,8,10,12,14,16,18,20,22
+### Testing:
+- n/a
+
+## Story 2.5: Preselected values 
+Status: ✅ Completed
+
+### Acceptance Criteria:
+- The value selector-popup for the "two pairs" result cells whould show the predefined values  6,8,10,12,14,16,18,20,22
+- The ​​​value selector-popup for the "full house" result cells whould show the predefined values 7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28
+ 

@@ -20,6 +20,7 @@ export interface Player {
 	id: string;
 	name: string;
 	scores: Partial<Record<ScoreCategory, number | null>>;
+	colorIndex?: number; // Index into the color scheme to preserve color when reordering
 }
 
 export interface GameState {
