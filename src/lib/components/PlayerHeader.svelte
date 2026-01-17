@@ -1,12 +1,16 @@
 <script lang="ts">
 	import type { Player } from '../types';
+	import { getPlayerColor } from '../utils/playerColors';
 
 	interface Props {
 		player: Player;
+		playerIndex: number;
 		onEdit: (playerId: string) => void;
 	}
 
-	let { player, onEdit }: Props = $props();
+	let { player, playerIndex, onEdit }: Props = $props();
+
+	let color = $derived(getPlayerColor(playerIndex));
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter' || e.key === ' ') {
@@ -18,6 +22,7 @@
 
 <div
 	class="player-header"
+	style="background-color: {color.header}; color: white;"
 	onclick={() => onEdit(player.id)}
 	onkeydown={handleKeydown}
 	role="button"
@@ -37,15 +42,23 @@
 		align-items: center;
 		justify-content: center;
 		position: relative;
+		width: 100%;
+		box-sizing: border-box;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.player-header:hover {
-		background: #e0e0e0;
+		opacity: 0.9;
 	}
 
 	.player-name {
 		font-weight: 600;
 		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 100%;
 	}
 
 	.player-header:focus {

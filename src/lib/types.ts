@@ -26,13 +26,26 @@ export interface GameState {
 	players: Player[];
 }
 
-export const SCORE_CATEGORIES: { key: ScoreCategory; label: string }[] = [
+export interface GameResult {
+	playerName: string;
+	total: number;
+}
+
+export interface GameHistoryEntry {
+	id: string;
+	date: string; // ISO date string
+	timestamp: string; // ISO timestamp string
+	results: GameResult[];
+}
+
+export const SCORE_CATEGORIES: { key: ScoreCategory | 'summary'; label: string }[] = [
 	{ key: 'ones', label: 'Ones' },
 	{ key: 'twos', label: 'Twos' },
 	{ key: 'threes', label: 'Threes' },
 	{ key: 'fours', label: 'Fours' },
 	{ key: 'fives', label: 'Fives' },
 	{ key: 'sixes', label: 'Sixes' },
+	{ key: 'summary', label: 'Sum' },
 	{ key: 'bonus', label: 'Bonus' },
 	{ key: 'onePair', label: 'One Pair' },
 	{ key: 'twoPairs', label: 'Two Pairs' },
@@ -47,4 +60,3 @@ export const SCORE_CATEGORIES: { key: ScoreCategory; label: string }[] = [
 
 export const BONUS_THRESHOLD = 63;
 export const BONUS_POINTS = 35;
-

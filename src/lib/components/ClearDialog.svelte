@@ -1,11 +1,21 @@
 <script lang="ts">
 	interface Props {
 		isOpen?: boolean;
+		title?: string;
+		message?: string;
+		confirmText?: string;
 		onConfirm: () => void;
 		onCancel: () => void;
 	}
 
-	let { isOpen = $bindable(false), onConfirm, onCancel }: Props = $props();
+	let {
+		isOpen = $bindable(false),
+		title = 'Clear Score Dashboard',
+		message = 'Are you sure you want to clear all scores? This action cannot be undone.',
+		confirmText = 'Clear',
+		onConfirm,
+		onCancel
+	}: Props = $props();
 
 	function handleConfirm() {
 		onConfirm();
@@ -35,11 +45,11 @@
 		tabindex="-1"
 	>
 		<div class="dialog" onclick={(e) => e.stopPropagation()} role="none">
-			<h3 id="dialog-title">Clear Score Dashboard</h3>
-			<p>Are you sure you want to clear all scores? This action cannot be undone.</p>
+			<h3 id="dialog-title">{title}</h3>
+			<p>{message}</p>
 			<div class="dialog-actions">
 				<button class="btn btn-cancel" onclick={handleCancel}>Cancel</button>
-				<button class="btn btn-confirm" onclick={handleConfirm}>Clear</button>
+				<button class="btn btn-confirm" onclick={handleConfirm}>{confirmText}</button>
 			</div>
 		</div>
 	</div>

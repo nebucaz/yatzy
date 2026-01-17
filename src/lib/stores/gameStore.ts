@@ -1,9 +1,20 @@
 import { writable } from 'svelte/store';
-import type { Player, ScoreCategory, GameState } from '../types';
+import type { Player, ScoreCategory, GameState, GameHistoryEntry, GameResult } from '../types';
 import { loadGameState, saveGameState } from '../utils/storage';
+import { saveGameHistory } from '../utils/historyStorage';
+import { calculateTotal } from '../utils/scoreCalculator';
 
 function createGameStore() {
 	const { subscribe, set, update } = writable<GameState>({ players: [] });
+	
+	// Helper to get current state
+	function getCurrentState(): GameState {
+		let currentState: GameState = { players: [] };
+		subscribe((state) => {
+			currentState = state;
+		})();
+		return currentState;
+	}
 
 	// Load from localStorage on initialization
 	const initialState = loadGameState();
@@ -71,7 +82,39 @@ function createGameStore() {
 			});
 		},
 		clearGame: () => {
-			const newState = { players: [{ id: crypto.randomUUID(), name: 'Player 1', scores: {} }] };
+			// Save current game results to history before clearing
+			const currentState = getCurrentState();
+			if (currentState.players.length > 0) {
+				const results: GameResult[] = currentState.players.map((player) => ({
+					playerName: player.name,
+					total: calculateTotal(player)
+				}));
+
+				// Only save if at least one player has a score
+				const hasScores = results.some((r) => r.total > 0);
+				if (hasScores) {
+					const now = new Date();
+					const historyEntry: GameHistoryEntry = {
+						id: crypto.randomUUID(),
+						date: now.toISOString().split('T')[0], // YYYY-MM-DD
+						timestamp: now.toISOString(),
+						results
+					};
+					saveGameHistory(historyEntry);
+				}
+			}
+
+			// Retain players but clear their scores
+			const newState = {
+				players: currentState.players.map((player) => ({
+					...player,
+					scores: {}
+				}))
+			};
+			// If no players exist, create one default player
+			if (newState.players.length === 0) {
+				newState.players = [{ id: crypto.randomUUID(), name: 'Player 1', scores: {} }];
+			}
 			saveGameState(newState);
 			set(newState);
 		},

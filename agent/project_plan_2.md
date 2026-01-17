@@ -101,13 +101,3 @@ Status: ✅ Completed
 
 ### Testing
 - Make sure, the overall sum is correct (do not double count the top rows)
-
-## Story 1.8: Clear game history 
-Status: ✅ Completed
-
-### Acceptance Criteria
-- Add a "Delete History" button in the "Game History" section
-- Wehcn clicked, a confirmaiton dialog is shown
-- When deletion is confirmed, the game history will be deleted
-
-### Testing

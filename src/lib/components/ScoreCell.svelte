@@ -1,17 +1,27 @@
 <script lang="ts">
 	import type { ScoreCategory } from '../types';
 
+	interface PlayerColor {
+		header: string;
+		cell: string;
+		text: string;
+	}
+
 	interface Props {
 		score?: number | null;
 		category: ScoreCategory;
 		isBonus?: boolean;
 		isEditable?: boolean;
+		playerColor?: PlayerColor | null;
 		onClick: () => void;
 	}
 
-	let { score, category, isBonus = false, isEditable = true, onClick }: Props = $props();
+	let { score, category, isBonus = false, isEditable = true, playerColor = null, onClick }: Props =
+		$props();
 
-	let isEmpty = $derived(score === undefined || score === null);
+	// Distinguish between empty (undefined) and skipped (null)
+	let isEmpty = $derived(score === undefined);
+	let isSkipped = $derived(score === null);
 	let displayValue = $derived(
 		isBonus && score === null ? '-' : score?.toString() || ''
 	);
@@ -28,22 +38,38 @@
 	<div
 		class="score-cell"
 		class:empty={isEmpty}
+		class:skipped={isSkipped}
 		class:bonus={isBonus}
+		class:has-player-color={playerColor !== null}
+		style={playerColor ? `background-color: ${playerColor.cell}; color: ${playerColor.text};` : ''}
 		onclick={onClick}
 		onkeydown={handleCellKeydown}
 		role="button"
 		tabindex="0"
 	>
-		<div class="score-value">{displayValue}</div>
+		<div class="score-value">
+			{#if isSkipped}
+				<span class="skipped-indicator">—</span>
+			{:else}
+				{displayValue}
+			{/if}
+		</div>
 	</div>
 {:else}
 	<div
 		class="score-cell"
 		class:empty={isEmpty}
+		class:skipped={isSkipped}
 		class:bonus={isBonus}
 		class:non-editable={true}
 	>
-		<div class="score-value">{displayValue}</div>
+		<div class="score-value">
+			{#if isSkipped}
+				<span class="skipped-indicator">—</span>
+			{:else}
+				{displayValue}
+			{/if}
+		</div>
 	</div>
 {/if}
 
@@ -69,6 +95,30 @@
 
 	.score-cell.empty:hover {
 		background: #ffeaa7;
+	}
+
+	.score-cell.has-player-color {
+		border-color: currentColor;
+	}
+
+	.score-cell.has-player-color:hover {
+		opacity: 0.9;
+	}
+
+	.score-cell.skipped {
+		background: #f8f9fa;
+		color: #6c757d;
+		border: 1px dashed #adb5bd;
+	}
+
+	.score-cell.skipped:hover {
+		background: #e9ecef;
+	}
+
+	.skipped-indicator {
+		font-weight: 600;
+		font-size: 1.2em;
+		color: #6c757d;
 	}
 
 	.score-cell.bonus {

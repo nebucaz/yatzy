@@ -1,16 +1,21 @@
 <script lang="ts">
 	import { gameStore } from '../stores/gameStore';
 	import { SCORE_CATEGORIES, type ScoreCategory, type Player } from '../types';
-	import { calculateBonus, calculateTotal } from '../utils/scoreCalculator';
+	import { calculateBonus, calculateTotal, calculateTopSectionTotal } from '../utils/scoreCalculator';
+	import { getPlayerColor } from '../utils/playerColors';
 	import PlayerHeader from './PlayerHeader.svelte';
 	import ScoreCell from './ScoreCell.svelte';
 	import ClearDialog from './ClearDialog.svelte';
 	import ScoreEntryPopup from './ScoreEntryPopup.svelte';
+	import GameHistory from './GameHistory.svelte';
+	import PlayerNameEditPopup from './PlayerNameEditPopup.svelte';
 
 	let showClearDialog = $state(false);
-	let editingPlayerId: string | null = $state(null);
-	let editingPlayerName = $state('');
-	let showRemoveConfirm: string | null = $state(null);
+	let playerNameEditState: {
+		isOpen: boolean;
+		playerId: string;
+		playerName: string;
+	} | null = $state(null);
 	let popupState: {
 		isOpen: boolean;
 		playerId: string;
@@ -27,29 +32,30 @@
 	function handlePlayerHeaderClick(playerId: string) {
 		const player = players.find((p) => p.id === playerId);
 		if (player) {
-			editingPlayerId = playerId;
-			editingPlayerName = player.name;
+			playerNameEditState = {
+				isOpen: true,
+				playerId: player.id,
+				playerName: player.name
+			};
 		}
 	}
 
-	function handleUpdatePlayerName() {
-		if (editingPlayerId && editingPlayerName.trim()) {
-			gameStore.updatePlayerName(editingPlayerId, editingPlayerName.trim());
-			editingPlayerId = null;
-			editingPlayerName = '';
-		} else {
-			editingPlayerId = null;
+	function handleSavePlayerName(name: string) {
+		if (playerNameEditState) {
+			gameStore.updatePlayerName(playerNameEditState.playerId, name);
+			playerNameEditState = null;
 		}
 	}
 
-	function handleRemovePlayer(playerId: string) {
-		if (showRemoveConfirm === playerId) {
-			gameStore.removePlayer(playerId);
-			showRemoveConfirm = null;
-			editingPlayerId = null;
-		} else {
-			showRemoveConfirm = playerId;
+	function handleRemovePlayer() {
+		if (playerNameEditState) {
+			gameStore.removePlayer(playerNameEditState.playerId);
+			playerNameEditState = null;
 		}
+	}
+
+	function handleCancelPlayerNameEdit() {
+		playerNameEditState = null;
 	}
 
 	function handleSetScore(
@@ -61,15 +67,15 @@
 		popupState = null;
 	}
 
-	function handleCellClick(playerId: string, category: ScoreCategory) {
-		if (category === 'bonus') {
-			return; // Bonus is calculated, not editable
+	function handleCellClick(playerId: string, category: ScoreCategory | 'summary') {
+		if (category === 'bonus' || category === 'summary') {
+			return; // Bonus and summary are calculated, not editable
 		}
 		const categoryLabel = SCORE_CATEGORIES.find((c) => c.key === category)?.label || category;
 		popupState = {
 			isOpen: true,
 			playerId,
-			category,
+			category: category as ScoreCategory,
 			categoryLabel
 		};
 	}
@@ -82,18 +88,63 @@
 		showClearDialog = true;
 	}
 
+	let gameHistoryRef: GameHistory | null = $state(null);
+	let draggedPlayerId: string | null = $state(null);
+
+	function handleDragStart(e: DragEvent, playerId: string) {
+		draggedPlayerId = playerId;
+		if (e.dataTransfer) {
+			e.dataTransfer.effectAllowed = 'move';
+			e.dataTransfer.setData('text/plain', playerId);
+		}
+	}
+
+	function handleDragOver(e: DragEvent) {
+		e.preventDefault();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = 'move';
+		}
+	}
+
+	function handleDrop(e: DragEvent, targetPlayerId: string) {
+		e.preventDefault();
+		if (draggedPlayerId && draggedPlayerId !== targetPlayerId) {
+			const currentPlayers = [...players];
+			const draggedIndex = currentPlayers.findIndex((p) => p.id === draggedPlayerId);
+			const targetIndex = currentPlayers.findIndex((p) => p.id === targetPlayerId);
+
+			if (draggedIndex !== -1 && targetIndex !== -1) {
+				const [draggedPlayer] = currentPlayers.splice(draggedIndex, 1);
+				currentPlayers.splice(targetIndex, 0, draggedPlayer);
+				gameStore.reorderPlayers(currentPlayers);
+			}
+		}
+		draggedPlayerId = null;
+	}
+
+	function handleDragEnd() {
+		draggedPlayerId = null;
+	}
+
 	function handleClearConfirm() {
 		gameStore.clearGame();
 		showClearDialog = false;
+		// Reload history after clearing
+		if (gameHistoryRef) {
+			gameHistoryRef.reload();
+		}
 	}
 
 	function handleClearCancel() {
 		showClearDialog = false;
 	}
 
-	function getScore(player: Player, category: ScoreCategory): number | null | undefined {
+	function getScore(player: Player, category: ScoreCategory | 'summary'): number | null | undefined {
 		if (category === 'bonus') {
 			return calculateBonus(player);
+		}
+		if (category === 'summary') {
+			return calculateTopSectionTotal(player);
 		}
 		return player.scores[category];
 	}
@@ -113,50 +164,20 @@
 			<thead>
 				<tr>
 					<th class="category-col">Category</th>
-					{#each players as player (player.id)}
-						<th class="player-col">
+					{#each players as player, index (player.id)}
+						<th
+							class="player-col"
+							draggable="true"
+							ondragstart={(e) => handleDragStart(e, player.id)}
+							ondragover={(e) => handleDragOver(e)}
+							ondrop={(e) => handleDrop(e, player.id)}
+							ondragend={handleDragEnd}
+						>
 							<PlayerHeader
 								{player}
+								playerIndex={index}
 								onEdit={handlePlayerHeaderClick}
 							/>
-							{#if editingPlayerId === player.id}
-								<div class="name-edit-dialog">
-									<input
-										type="text"
-										bind:value={editingPlayerName}
-										onkeydown={(e) => {
-											if (e.key === 'Enter') handleUpdatePlayerName();
-											if (e.key === 'Escape') editingPlayerId = null;
-										}}
-										onblur={handleUpdatePlayerName}
-									/>
-									<div class="edit-actions">
-										<button
-											class="btn-remove-small"
-											onclick={() => handleRemovePlayer(player.id)}
-										>
-											Remove
-										</button>
-									</div>
-									{#if showRemoveConfirm === player.id}
-										<div class="remove-confirm">
-											<p>Remove this player?</p>
-											<button
-												class="btn-confirm-small"
-												onclick={() => handleRemovePlayer(player.id)}
-											>
-												Yes
-											</button>
-											<button
-												class="btn-cancel-small"
-												onclick={() => (showRemoveConfirm = null)}
-											>
-												No
-											</button>
-										</div>
-									{/if}
-								</div>
-							{/if}
 						</th>
 					{/each}
 				</tr>
@@ -165,23 +186,42 @@
 				{#each SCORE_CATEGORIES as { key: category, label } (category)}
 					<tr>
 						<td class="category-label">{label}</td>
-						{#each players as player (player.id)}
+						{#each players as player, playerIndex (player.id)}
+							{@const playerColor = getPlayerColor(playerIndex)}
 							<td class="score-cell-container">
-								<ScoreCell
-									score={getScore(player, category)}
-									category={category}
-									isBonus={category === 'bonus'}
-									isEditable={category !== 'bonus'}
-									onClick={() => handleCellClick(player.id, category)}
-								/>
+								{#if category === 'summary'}
+									<div
+										class="summary-cell"
+										style="background-color: {playerColor.cell}; color: {playerColor.text};"
+									>
+										{calculateTopSectionTotal(player)}
+									</div>
+								{:else}
+									{@const scoreCategory = category as ScoreCategory}
+									{@const hasValue = getScore(player, scoreCategory) !== undefined && getScore(player, scoreCategory) !== null}
+									<ScoreCell
+										score={getScore(player, scoreCategory)}
+										category={scoreCategory}
+										isBonus={scoreCategory === 'bonus'}
+										isEditable={scoreCategory !== 'bonus'}
+										playerColor={hasValue ? playerColor : null}
+										onClick={() => handleCellClick(player.id, scoreCategory)}
+									/>
+								{/if}
 							</td>
 						{/each}
 					</tr>
 				{/each}
 				<tr class="total-row">
 					<td class="category-label total-label">Total</td>
-					{#each players as player (player.id)}
-						<td class="total-cell">{calculateTotal(player)}</td>
+					{#each players as player, playerIndex (player.id)}
+						{@const playerColor = getPlayerColor(playerIndex)}
+						<td
+							class="total-cell"
+							style="background-color: {playerColor.cell}; color: {playerColor.text};"
+						>
+							{calculateTotal(player)}
+						</td>
 					{/each}
 				</tr>
 			</tbody>
@@ -209,6 +249,18 @@
 			onCancel={handlePopupCancel}
 		/>
 	{/if}
+
+	{#if playerNameEditState}
+		<PlayerNameEditPopup
+			isOpen={playerNameEditState.isOpen}
+			playerName={playerNameEditState.playerName}
+			onSave={handleSavePlayerName}
+			onRemove={handleRemovePlayer}
+			onCancel={handleCancelPlayerNameEdit}
+		/>
+	{/if}
+
+	<GameHistory bind:this={gameHistoryRef} />
 </div>
 
 <style>
@@ -271,26 +323,37 @@
 	}
 
 	.score-table {
-		width: 100%;
+		width: auto;
 		border-collapse: collapse;
 		background: white;
+		table-layout: auto;
 	}
 
 	.category-col {
-		width: 150px;
-		min-width: 150px;
+		width: auto;
+		min-width: fit-content;
 		background: #f8f9fa;
 	}
 
 	.player-col {
-		width: auto;
-		min-width: fit-content;
-		max-width: 150px;
+		width: 150px !important;
+		max-width: 150px !important;
+		min-width: 150px !important;
 		position: relative;
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 
 	.player-col :global(.player-header) {
 		width: 100%;
+	}
+
+	.player-col[draggable='true'] {
+		cursor: move;
+	}
+
+	.player-col[draggable='true']:hover {
+		opacity: 0.8;
 	}
 
 	.category-label {
@@ -304,6 +367,22 @@
 	.score-cell-container {
 		padding: 0;
 		border: 1px solid #ddd;
+		width: 150px !important;
+		max-width: 150px !important;
+		min-width: 150px !important;
+		box-sizing: border-box;
+	}
+
+	.summary-cell {
+		padding: 0.5rem;
+		text-align: center;
+		font-weight: 600;
+		background: #f8f9fa;
+		border: 1px solid #ddd;
+		min-height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.total-row {
@@ -322,86 +401,12 @@
 		font-size: 1.1rem;
 		border: 1px solid #ddd;
 		background: #e9ecef;
+		width: 150px !important;
+		max-width: 150px !important;
+		min-width: 150px !important;
+		box-sizing: border-box;
 	}
 
-	.name-edit-dialog {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
-		background: white;
-		border: 1px solid #ddd;
-		border-top: none;
-		padding: 0.5rem;
-		z-index: 10;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
-
-	.name-edit-dialog input {
-		width: 100%;
-		padding: 0.25rem;
-		border: 1px solid #999;
-		border-radius: 4px;
-		margin-bottom: 0.5rem;
-	}
-
-	.edit-actions {
-		margin-top: 0.25rem;
-	}
-
-	.btn-remove-small {
-		padding: 0.25rem 0.5rem;
-		background: #dc3545;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.75rem;
-		width: 100%;
-	}
-
-	.btn-remove-small:hover {
-		background: #c82333;
-	}
-
-	.remove-confirm {
-		margin-top: 0.5rem;
-		padding: 0.5rem;
-		background: #fff3cd;
-		border-radius: 4px;
-		border: 1px solid #ffc107;
-	}
-
-	.remove-confirm p {
-		margin: 0 0 0.5rem 0;
-		font-size: 0.8rem;
-	}
-
-	.remove-confirm button {
-		padding: 0.25rem 0.5rem;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.75rem;
-		margin-right: 0.25rem;
-	}
-
-	.btn-confirm-small {
-		background: #dc3545;
-		color: white;
-	}
-
-	.btn-confirm-small:hover {
-		background: #c82333;
-	}
-
-	.btn-cancel-small {
-		background: #6c757d;
-		color: white;
-	}
-
-	.btn-cancel-small:hover {
-		background: #5a6268;
-	}
 </style>
+
 
