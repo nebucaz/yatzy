@@ -23,3 +23,4 @@ export function getPlayerColor(playerIndex: number) {
 	return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length];
 }
 
+

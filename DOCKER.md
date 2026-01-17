@@ -104,3 +104,4 @@ The application is a static SPA and doesn't require environment variables. All d
 - No backend server is required - it's a fully static application
 - The nginx configuration includes SPA routing support and gzip compression
 
+
