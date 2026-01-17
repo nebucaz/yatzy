@@ -198,13 +198,15 @@
 									</div>
 								{:else}
 									{@const scoreCategory = category as ScoreCategory}
-									{@const hasValue = getScore(player, scoreCategory) !== undefined && getScore(player, scoreCategory) !== null}
+									{@const cellScore = getScore(player, scoreCategory)}
+									{@const hasValue = cellScore !== undefined && cellScore !== null}
+									{@const isSkipped = cellScore === null}
 									<ScoreCell
-										score={getScore(player, scoreCategory)}
+										score={cellScore}
 										category={scoreCategory}
 										isBonus={scoreCategory === 'bonus'}
 										isEditable={scoreCategory !== 'bonus'}
-										playerColor={hasValue ? playerColor : null}
+										playerColor={hasValue || isSkipped ? playerColor : null}
 										onClick={() => handleCellClick(player.id, scoreCategory)}
 									/>
 								{/if}

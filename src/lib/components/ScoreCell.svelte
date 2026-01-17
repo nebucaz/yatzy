@@ -82,7 +82,7 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		background: white;
+		background: transparent;
 	}
 
 	.score-cell:hover {
@@ -90,11 +90,11 @@
 	}
 
 	.score-cell.empty {
-		background: #fff3cd;
+		background: transparent;
 	}
 
 	.score-cell.empty:hover {
-		background: #ffeaa7;
+		background: #f5f5f5;
 	}
 
 	.score-cell.has-player-color {
@@ -106,19 +106,16 @@
 	}
 
 	.score-cell.skipped {
-		background: #f8f9fa;
-		color: #6c757d;
 		border: 1px dashed #adb5bd;
 	}
 
 	.score-cell.skipped:hover {
-		background: #e9ecef;
+		opacity: 0.9;
 	}
 
 	.skipped-indicator {
 		font-weight: 600;
 		font-size: 1.2em;
-		color: #6c757d;
 	}
 
 	.score-cell.bonus {
