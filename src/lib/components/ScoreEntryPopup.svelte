@@ -35,11 +35,21 @@
 	
 	// Determine entry mode
 	let useDiceIcons = $derived(['onePair', 'threeOfAKind', 'fourOfAKind'].includes(category));
+	let useTwoPairs = $derived(category === 'twoPairs');
+	let useFullHouse = $derived(category === 'fullHouse');
 	let useMultipliers = $derived(['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].includes(category));
-	let useNumberPad = $derived(possibleValues === null && !useDiceIcons && !useMultipliers);
+	let useNumberPad = $derived(possibleValues === null && !useDiceIcons && !useMultipliers && !useTwoPairs && !useFullHouse);
 	let isChance = $derived(category === 'chance');
 	
 	let validationError = $state('');
+	
+	// Two pairs: track selected dice in upper and lower rows
+	let twoPairsUpperDice = $state<number | null>(null);
+	let twoPairsLowerDice = $state<number | null>(null);
+	
+	// Full house: track selected dice for pair (upper) and three of a kind (lower)
+	let fullHousePairDice = $state<number | null>(null);
+	let fullHouseThreeDice = $state<number | null>(null);
 
 	// Dice icons: SVG files
 	const diceIcons = [
@@ -89,6 +99,64 @@
 
 	function handleDiceIconSelect(diceValue: number) {
 		const calculatedValue = calculateDiceValue(diceValue, category);
+		onSetScore(calculatedValue);
+	}
+
+	function handleTwoPairsUpperSelect(diceValue: number) {
+		// Can't select if this dice is already selected in the lower row
+		if (twoPairsLowerDice === diceValue) {
+			return;
+		}
+		twoPairsUpperDice = diceValue;
+		// Reset lower selection if it's the same as the new upper selection (shouldn't happen due to check above, but keep for safety)
+		if (twoPairsLowerDice === diceValue) {
+			twoPairsLowerDice = null;
+		}
+	}
+
+	function handleTwoPairsLowerSelect(diceValue: number) {
+		if (twoPairsUpperDice === null) return; // Can't select lower without upper
+		if (diceValue === twoPairsUpperDice) return; // Can't select same as upper
+		
+		twoPairsLowerDice = diceValue;
+		
+		// If upper selection matches the lower selection, reset upper (shouldn't happen due to disabled state, but keep for safety)
+		if (twoPairsUpperDice === diceValue) {
+			twoPairsUpperDice = null;
+			return;
+		}
+		
+		// Calculate and set score: 2(a+b)
+		const calculatedValue = 2 * (twoPairsUpperDice + diceValue);
+		onSetScore(calculatedValue);
+	}
+
+	function handleFullHousePairSelect(diceValue: number) {
+		// Can't select if this dice is already selected in the three of a kind row
+		if (fullHouseThreeDice === diceValue) {
+			return;
+		}
+		fullHousePairDice = diceValue;
+		// Reset three of a kind selection if it's the same as the new pair selection (shouldn't happen due to check above, but keep for safety)
+		if (fullHouseThreeDice === diceValue) {
+			fullHouseThreeDice = null;
+		}
+	}
+
+	function handleFullHouseThreeSelect(diceValue: number) {
+		if (fullHousePairDice === null) return; // Can't select three of a kind without pair
+		if (diceValue === fullHousePairDice) return; // Can't select same as pair
+		
+		fullHouseThreeDice = diceValue;
+		
+		// If pair selection matches the three of a kind selection, reset pair (shouldn't happen due to disabled state, but keep for safety)
+		if (fullHousePairDice === diceValue) {
+			fullHousePairDice = null;
+			return;
+		}
+		
+		// Calculate and set score: 2 * pairValue + 3 * threeOfAKindValue
+		const calculatedValue = 2 * fullHousePairDice + 3 * diceValue;
 		onSetScore(calculatedValue);
 	}
 
@@ -202,6 +270,10 @@
 	$effect(() => {
 		if (isOpen) {
 			numberPadValue = '';
+			twoPairsUpperDice = null;
+			twoPairsLowerDice = null;
+			fullHousePairDice = null;
+			fullHouseThreeDice = null;
 		}
 	});
 </script>
@@ -242,6 +314,92 @@
 							{t('diceHelpFourOfAKind', currentLang)}
 						{/if}
 					</div>
+				</div>
+			{:else if useTwoPairs}
+				<!-- Two pairs: two rows of dice selection -->
+				<div class="two-pairs-container">
+					<div class="two-pairs-row">
+						<div class="two-pairs-label">{t('firstPair', currentLang)}</div>
+						<div class="dice-icons">
+							{#each diceIcons as dice}
+								{@const isDisabled = dice.value === twoPairsLowerDice}
+								<button
+									class="dice-icon-btn"
+									class:selected={twoPairsUpperDice === dice.value}
+									disabled={isDisabled}
+									onclick={() => handleTwoPairsUpperSelect(dice.value)}
+									title={dice.value.toString()}
+								>
+									<img src={dice.icon} alt={`Dice ${dice.value}`} class="dice-icon-large" />
+								</button>
+							{/each}
+						</div>
+					</div>
+					<div class="two-pairs-row">
+						<div class="two-pairs-label">{t('secondPair', currentLang)}</div>
+						<div class="dice-icons">
+							{#each diceIcons as dice}
+								{@const isDisabled = twoPairsUpperDice === null || dice.value === twoPairsUpperDice}
+								<button
+									class="dice-icon-btn"
+									class:selected={twoPairsLowerDice === dice.value}
+									disabled={isDisabled}
+									onclick={() => handleTwoPairsLowerSelect(dice.value)}
+									title={dice.value.toString()}
+								>
+									<img src={dice.icon} alt={`Dice ${dice.value}`} class="dice-icon-large" />
+								</button>
+							{/each}
+						</div>
+					</div>
+					{#if twoPairsUpperDice !== null && twoPairsLowerDice !== null}
+						<div class="two-pairs-result">
+							{t('twoPairsResult', currentLang).replace('{0}', (2 * (twoPairsUpperDice + twoPairsLowerDice)).toString())}
+						</div>
+					{/if}
+				</div>
+			{:else if useFullHouse}
+				<!-- Full house: two rows of dice selection (pair + three of a kind) -->
+				<div class="two-pairs-container">
+					<div class="two-pairs-row">
+						<div class="two-pairs-label">{t('fullHousePair', currentLang)}</div>
+						<div class="dice-icons">
+							{#each diceIcons as dice}
+								{@const isDisabled = dice.value === fullHouseThreeDice}
+								<button
+									class="dice-icon-btn"
+									class:selected={fullHousePairDice === dice.value}
+									disabled={isDisabled}
+									onclick={() => handleFullHousePairSelect(dice.value)}
+									title={dice.value.toString()}
+								>
+									<img src={dice.icon} alt={`Dice ${dice.value}`} class="dice-icon-large" />
+								</button>
+							{/each}
+						</div>
+					</div>
+					<div class="two-pairs-row">
+						<div class="two-pairs-label">{t('fullHouseThree', currentLang)}</div>
+						<div class="dice-icons">
+							{#each diceIcons as dice}
+								{@const isDisabled = fullHousePairDice === null || dice.value === fullHousePairDice}
+								<button
+									class="dice-icon-btn"
+									class:selected={fullHouseThreeDice === dice.value}
+									disabled={isDisabled}
+									onclick={() => handleFullHouseThreeSelect(dice.value)}
+									title={dice.value.toString()}
+								>
+									<img src={dice.icon} alt={`Dice ${dice.value}`} class="dice-icon-large" />
+								</button>
+							{/each}
+						</div>
+					</div>
+					{#if fullHousePairDice !== null && fullHouseThreeDice !== null}
+						<div class="two-pairs-result">
+							{t('fullHouseResult', currentLang).replace('{0}', (2 * fullHousePairDice + 3 * fullHouseThreeDice).toString())}
+						</div>
+					{/if}
 				</div>
 			{:else if useMultipliers}
 				<!-- Multiplier selection for ones, twos, threes, fours, fives, sixes -->
@@ -515,9 +673,16 @@
 		min-height: auto;
 	}
 
-	.dice-icon-btn:hover {
+	.dice-icon-btn:hover:not(:disabled) {
 		background: #007bff;
 		transform: scale(1.05);
+	}
+
+	.dice-icon-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+		border-color: #adb5bd;
+		background: #e9ecef;
 	}
 
 	.dice-icon-large {
@@ -527,8 +692,13 @@
 		filter: brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(7500%) hue-rotate(210deg) brightness(100%) contrast(100%);
 	}
 
-	.dice-icon-btn:hover .dice-icon-large {
+	.dice-icon-btn:hover:not(:disabled) .dice-icon-large {
 		filter: brightness(0) saturate(100%) invert(100%);
+	}
+
+	.dice-icon-btn:disabled .dice-icon-large {
+		filter: brightness(0) saturate(0%) invert(50%);
+		opacity: 0.5;
 	}
 
 	.dice-help-text {
@@ -536,6 +706,43 @@
 		font-size: 0.9rem;
 		color: #6c757d;
 		margin-top: 0.5rem;
+	}
+
+	.two-pairs-container {
+		margin-bottom: 1rem;
+	}
+
+	.two-pairs-row {
+		margin-bottom: 1rem;
+	}
+
+	.two-pairs-label {
+		font-weight: 600;
+		font-size: 0.9rem;
+		margin-bottom: 0.5rem;
+		color: #333;
+		text-align: center;
+	}
+
+	.two-pairs-result {
+		text-align: center;
+		font-size: 1rem;
+		font-weight: 600;
+		color: #007bff;
+		margin-top: 0.5rem;
+		padding: 0.5rem;
+		background: #f0f8ff;
+		border-radius: 4px;
+	}
+
+	.dice-icon-btn.selected {
+		background: #007bff;
+		border-color: #0056b3;
+		box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+	}
+
+	.dice-icon-btn.selected .dice-icon-large {
+		filter: brightness(0) saturate(100%) invert(100%);
 	}
 
 	.multipliers-container {

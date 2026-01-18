@@ -20,8 +20,11 @@ export function getPossibleValues(category: ScoreCategory): number[] | null {
 			// These use dice icon entry mode (⚀ ⚁ ⚂ ⚃ ⚄ ⚅)
 			return null;
 		case 'twoPairs':
-			// Two pairs: predefined values 6,8,10,12,14,16,18,20,22
-			return [6, 8, 10, 12, 14, 16, 18, 20, 22];
+			// Two pairs: uses two-row dice selection mode
+			return null;
+		case 'fullHouse':
+			// Full house: uses two-row dice selection mode (pair + three of a kind)
+			return null;
 		case 'yatzy':
 			// Yatzy: 50
 			return [50];
@@ -31,9 +34,6 @@ export function getPossibleValues(category: ScoreCategory): number[] | null {
 		case 'largeStraight':
 			// Large straight: fixed value 25
 			return [20];
-		case 'fullHouse':
-			// Full house: predefined values 7,8,9,11,12,13,14,15,16,17,18,19,20,21,22,23,24,26,27,28
-			return [7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28];
 		case 'chance':
 		case 'bonus':
 			// These categories allow arbitrary values (use number pad)

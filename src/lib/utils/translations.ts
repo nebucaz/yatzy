@@ -76,6 +76,12 @@ export interface Translations {
 	diceHelpThreeOfAKind: string;
 	diceHelpFourOfAKind: string;
 	multiplierHelp: string;
+	firstPair: string;
+	secondPair: string;
+	twoPairsResult: string;
+	fullHousePair: string;
+	fullHouseThree: string;
+	fullHouseResult: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -141,7 +147,13 @@ export const translations: Record<Language, Translations> = {
 		diceHelpOnePair: 'Select a dice value (value = dice × 2)',
 		diceHelpThreeOfAKind: 'Select a dice value (value = dice × 3)',
 		diceHelpFourOfAKind: 'Select a dice value (value = dice × 4)',
-		multiplierHelp: 'Select a multiplier (value = {0} × multiplier)'
+		multiplierHelp: 'Select a multiplier (value = {0} × multiplier)',
+		firstPair: 'First Pair:',
+		secondPair: 'Second Pair:',
+		twoPairsResult: 'Value: {0}',
+		fullHousePair: 'Pair (2 of a kind):',
+		fullHouseThree: 'Three of a kind:',
+		fullHouseResult: 'Value: {0}'
 	},
 	de: {
 		ones: 'Einsen',
@@ -205,7 +217,13 @@ export const translations: Record<Language, Translations> = {
 		diceHelpOnePair: 'Wählen Sie einen Würfelwert (Wert = Würfel × 2)',
 		diceHelpThreeOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 3)',
 		diceHelpFourOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 4)',
-		multiplierHelp: 'Wählen Sie einen Multiplikator (Wert = {0} × Multiplikator)'
+		multiplierHelp: 'Wählen Sie einen Multiplikator (Wert = {0} × Multiplikator)',
+		firstPair: 'Erstes Paar:',
+		secondPair: 'Zweites Paar:',
+		twoPairsResult: 'Wert: {0}',
+		fullHousePair: 'Paar (2 gleiche):',
+		fullHouseThree: 'Dreierpasch:',
+		fullHouseResult: 'Wert: {0}'
 	},
 	ft: {
 		ones: 'Unos',
@@ -269,7 +287,13 @@ export const translations: Record<Language, Translations> = {
 		diceHelpOnePair: 'Seleccione un valor de dado (valor = dado × 2)',
 		diceHelpThreeOfAKind: 'Seleccione un valor de dado (valor = dado × 3)',
 		diceHelpFourOfAKind: 'Seleccione un valor de dado (valor = dado × 4)',
-		multiplierHelp: 'Seleccione un multiplicador (valor = {0} × multiplicador)'
+		multiplierHelp: 'Seleccione un multiplicador (valor = {0} × multiplicador)',
+		firstPair: 'Primer Par:',
+		secondPair: 'Segundo Par:',
+		twoPairsResult: 'Valor: {0}',
+		fullHousePair: 'Par (2 iguales):',
+		fullHouseThree: 'Trío:',
+		fullHouseResult: 'Valor: {0}'
 	},
 	fr: {
 		ones: 'Un',
@@ -333,7 +357,13 @@ export const translations: Record<Language, Translations> = {
 		diceHelpOnePair: 'Sélectionnez une valeur de dé (valeur = dé × 2)',
 		diceHelpThreeOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 3)',
 		diceHelpFourOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 4)',
-		multiplierHelp: 'Sélectionnez un multiplicateur (valeur = {0} × multiplicateur)'
+		multiplierHelp: 'Sélectionnez un multiplicateur (valeur = {0} × multiplicateur)',
+		firstPair: 'Première Paire:',
+		secondPair: 'Deuxième Paire:',
+		twoPairsResult: 'Valeur: {0}',
+		fullHousePair: 'Paire (2 identiques):',
+		fullHouseThree: 'Brelan:',
+		fullHouseResult: 'Valeur: {0}'
 	},
 	it: {
 		ones: 'Uno',
@@ -397,7 +427,13 @@ export const translations: Record<Language, Translations> = {
 		diceHelpOnePair: 'Seleziona un valore del dado (valore = dado × 2)',
 		diceHelpThreeOfAKind: 'Seleziona un valore del dado (valore = dado × 3)',
 		diceHelpFourOfAKind: 'Seleziona un valore del dado (valore = dado × 4)',
-		multiplierHelp: 'Seleziona un moltiplicatore (valore = {0} × moltiplicatore)'
+		multiplierHelp: 'Seleziona un moltiplicatore (valore = {0} × moltiplicatore)',
+		firstPair: 'Prima Coppia:',
+		secondPair: 'Seconda Coppia:',
+		twoPairsResult: 'Valore: {0}',
+		fullHousePair: 'Coppia (2 uguali):',
+		fullHouseThree: 'Tris:',
+		fullHouseResult: 'Valore: {0}'
 	}
 };
 
