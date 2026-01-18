@@ -45,6 +45,7 @@ export interface Translations {
 	removePlayer: string;
 	confirmRemove: string;
 	deleteHistory: string;
+	setAsActive: string;
 
 	// Titles
 	scoreDashboard: string;
@@ -136,6 +137,7 @@ export const translations: Record<Language, Translations> = {
 		clearHistoryConfirmation: 'Are you sure you want to clear the game history? This action cannot be undone.',
 		deleteHistoryConfirmation: 'Are you sure you want to delete all game history? This action cannot be undone.',
 		removePlayerConfirmation: 'Are you sure you want to remove this player? This action cannot be undone.',
+		setAsActive: 'Set as Active',
 		diceHelpOnePair: 'Select a dice value (value = dice × 2)',
 		diceHelpThreeOfAKind: 'Select a dice value (value = dice × 3)',
 		diceHelpFourOfAKind: 'Select a dice value (value = dice × 4)',
@@ -199,6 +201,7 @@ export const translations: Record<Language, Translations> = {
 		clearHistoryConfirmation: 'Sind Sie sicher, dass Sie den Spielverlauf löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
 		deleteHistoryConfirmation: 'Sind Sie sicher, dass Sie den gesamten Spielverlauf löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
 		removePlayerConfirmation: 'Sind Sie sicher, dass Sie diesen Spieler entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+		setAsActive: 'Als Aktiv setzen',
 		diceHelpOnePair: 'Wählen Sie einen Würfelwert (Wert = Würfel × 2)',
 		diceHelpThreeOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 3)',
 		diceHelpFourOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 4)',
@@ -262,6 +265,7 @@ export const translations: Record<Language, Translations> = {
 		clearHistoryConfirmation: '¿Está seguro de que desea limpiar el historial? Esta acción no se puede deshacer.',
 		deleteHistoryConfirmation: '¿Está seguro de que desea eliminar todo el historial de juegos? Esta acción no se puede deshacer.',
 		removePlayerConfirmation: '¿Está seguro de que desea eliminar este jugador? Esta acción no se puede deshacer.',
+		setAsActive: 'Establecer como Activo',
 		diceHelpOnePair: 'Seleccione un valor de dado (valor = dado × 2)',
 		diceHelpThreeOfAKind: 'Seleccione un valor de dado (valor = dado × 3)',
 		diceHelpFourOfAKind: 'Seleccione un valor de dado (valor = dado × 4)',
@@ -325,6 +329,7 @@ export const translations: Record<Language, Translations> = {
 		clearHistoryConfirmation: 'Êtes-vous sûr de vouloir effacer l\'historique? Cette action ne peut pas être annulée.',
 		deleteHistoryConfirmation: 'Êtes-vous sûr de vouloir supprimer tout l\'historique des parties? Cette action ne peut pas être annulée.',
 		removePlayerConfirmation: 'Êtes-vous sûr de vouloir retirer ce joueur? Cette action ne peut pas être annulée.',
+		setAsActive: 'Définir comme Actif',
 		diceHelpOnePair: 'Sélectionnez une valeur de dé (valeur = dé × 2)',
 		diceHelpThreeOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 3)',
 		diceHelpFourOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 4)',
@@ -388,6 +393,7 @@ export const translations: Record<Language, Translations> = {
 		clearHistoryConfirmation: 'Sei sicuro di voler cancellare la cronologia? Questa azione non può essere annullata.',
 		deleteHistoryConfirmation: 'Sei sicuro di voler eliminare tutta la cronologia dei giochi? Questa azione non può essere annullata.',
 		removePlayerConfirmation: 'Sei sicuro di voler rimuovere questo giocatore? Questa azione non può essere annullata.',
+		setAsActive: 'Imposta come Attivo',
 		diceHelpOnePair: 'Seleziona un valore del dado (valore = dado × 2)',
 		diceHelpThreeOfAKind: 'Seleziona un valore del dado (valore = dado × 3)',
 		diceHelpFourOfAKind: 'Seleziona un valore del dado (valore = dado × 4)',

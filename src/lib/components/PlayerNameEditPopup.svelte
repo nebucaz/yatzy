@@ -11,9 +11,10 @@
 		onSave: (name: string) => void;
 		onRemove: () => void;
 		onCancel: () => void;
+		onSetActive?: () => void;
 	}
 
-	let { isOpen, playerName, onSave, onRemove, onCancel }: Props = $props();
+	let { isOpen, playerName, onSave, onRemove, onCancel, onSetActive }: Props = $props();
 
 	let editName = $state('');
 	let showRemoveConfirm = $state(false);
@@ -90,6 +91,9 @@
 				<button class="btn btn-remove" onclick={handleRemove}>
 					{showRemoveConfirm ? t('confirmRemove', currentLang) : t('removePlayer', currentLang)}
 				</button>
+				{#if onSetActive}
+					<button class="btn btn-set-active" onclick={onSetActive}>{t('setAsActive', currentLang)}</button>
+				{/if}
 				<button class="btn btn-cancel" onclick={handleCancel}>{t('cancel', currentLang)}</button>
 				<button class="btn btn-save" onclick={handleSave}>{t('save', currentLang)}</button>
 			</div>
@@ -158,19 +162,21 @@
 
 	.popup-actions {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: space-between;
 		gap: 0.5rem;
 		margin-top: 1rem;
 	}
 
 	.btn {
-		padding: 0.5rem 1rem;
+		padding: 0.5rem 0.75rem;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
-		font-size: 0.9rem;
+		font-size: 0.85rem;
 		font-weight: 500;
-		flex: 1;
+		flex: 1 1 calc(50% - 0.25rem);
+		min-width: calc(50% - 0.25rem);
 	}
 
 	.btn-save {
@@ -198,6 +204,15 @@
 
 	.btn-remove:hover {
 		background: #c82333;
+	}
+
+	.btn-set-active {
+		background: #007bff;
+		color: white;
+	}
+
+	.btn-set-active:hover {
+		background: #0056b3;
 	}
 
 	.remove-warning {

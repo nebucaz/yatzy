@@ -37,6 +37,9 @@
 	
 	// Track which cell should be animated
 	let animatedCell: { playerId: string; category: ScoreCategory } | null = $state(null);
+	
+	// Track active player
+	let activePlayerId = $state<string | null>(null);
 
 	let rankingPopupState: {
 		isOpen: boolean;
@@ -72,6 +75,52 @@
 				return null;
 		}
 	}
+
+	// Check if any result cell is filled for any player
+	function hasAnyResultCellFilled(): boolean {
+		if (players.length === 0) return false;
+		
+		const editableCategories: ScoreCategory[] = [
+			'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
+			'onePair', 'twoPairs', 'threeOfAKind', 'fourOfAKind',
+			'smallStraight', 'largeStraight', 'fullHouse', 'chance', 'yatzy'
+		];
+		
+		return players.some((player) => {
+			return editableCategories.some((category) => {
+				const score = player.scores[category];
+				return score !== undefined;
+			});
+		});
+	}
+
+	// Get the initial active player (leftmost if no cells filled)
+	function getInitialActivePlayer(): string | null {
+		if (players.length === 0) return null;
+		if (!hasAnyResultCellFilled()) {
+			return players[0].id; // Leftmost player
+		}
+		return null; // Will be determined by last entered cell
+	}
+
+	// Get next player in sequence (wraps around)
+	function getNextPlayer(currentPlayerId: string | null): string | null {
+		if (players.length === 0) return null;
+		if (!currentPlayerId) return players[0].id;
+		
+		const currentIndex = players.findIndex((p) => p.id === currentPlayerId);
+		if (currentIndex === -1) return players[0].id;
+		
+		const nextIndex = (currentIndex + 1) % players.length;
+		return players[nextIndex].id;
+	}
+
+	// Initialize active player
+	$effect(() => {
+		if (activePlayerId === null && players.length > 0) {
+			activePlayerId = getInitialActivePlayer();
+		}
+	});
 
 	// Check if game is over (all cells filled or skipped for all players)
 	function isGameOver(): boolean {
@@ -134,6 +183,13 @@
 		}
 	}
 
+	function handleSetActivePlayer() {
+		if (playerNameEditState) {
+			activePlayerId = playerNameEditState.playerId;
+			playerNameEditState = null; // Close the dialog
+		}
+	}
+
 	function handleSavePlayerName(name: string) {
 		if (playerNameEditState) {
 			gameStore.updatePlayerName(playerNameEditState.playerId, name);
@@ -157,6 +213,7 @@
 		category: ScoreCategory,
 		score: number | null | undefined
 	) {
+		const wasClearing = score === undefined;
 		gameStore.setScore(playerId, category, score);
 		
 		// Trigger confetti if yatzy (50 points) is entered
@@ -173,6 +230,13 @@
 		setTimeout(() => {
 			animatedCell = null;
 		}, 500);
+		
+		// Advance to next player after glow animation, but only if not clearing
+		if (!wasClearing && activePlayerId === playerId) {
+			setTimeout(() => {
+				activePlayerId = getNextPlayer(activePlayerId);
+			}, 500); // After glow animation completes
+		}
 	}
 
 	function handleCellClick(playerId: string, category: ScoreCategory | 'summary') {
@@ -351,13 +415,17 @@
 					<th class="category-col category-label">{t('category', currentLang)}</th>
 					{#each players as player (player.id)}
 						{@const colorIndex = player.colorIndex ?? 0}
+						{@const playerColor = getPlayerColor(colorIndex)}
+						{@const isActive = activePlayerId === player.id}
 						<th
 							class="player-col"
+							class:active={isActive}
 							draggable="true"
 							ondragstart={(e) => handleDragStart(e, player.id)}
 							ondragover={(e) => handleDragOver(e)}
 							ondrop={(e) => handleDrop(e, player.id)}
 							ondragend={handleDragEnd}
+							style={isActive ? `--active-border-color: ${playerColor.header};` : ''}
 						>
 							<PlayerHeader
 								{player}
@@ -383,7 +451,12 @@
 						{#each players as player (player.id)}
 							{@const colorIndex = player.colorIndex ?? 0}
 							{@const playerColor = getPlayerColor(colorIndex)}
-							<td class="score-cell-container">
+							{@const isActive = activePlayerId === player.id}
+							<td 
+								class="score-cell-container"
+								class:active={isActive}
+								style={isActive ? `--active-border-color: ${playerColor.header};` : ''}
+							>
 								{#if category === 'summary'}
 									<div
 										class="summary-cell"
@@ -463,6 +536,7 @@
 			onSave={handleSavePlayerName}
 			onRemove={handleRemovePlayer}
 			onCancel={handleCancelPlayerNameEdit}
+			onSetActive={handleSetActivePlayer}
 		/>
 	{/if}
 
@@ -569,6 +643,14 @@
 		position: relative;
 		box-sizing: border-box;
 		overflow: hidden;
+		border-left: 2px solid transparent;
+		border-right: 2px solid transparent;
+		transition: border-color 0.3s ease;
+	}
+
+	.player-col.active {
+		border-left-color: var(--active-border-color, #007bff);
+		border-right-color: var(--active-border-color, #007bff);
 	}
 
 	.player-col :global(.player-header) {
@@ -639,10 +721,19 @@
 	.score-cell-container {
 		padding: 0;
 		border: 1px solid #ddd;
+		border-left: 1px solid #ddd;
+		border-right: 1px solid #ddd;
 		width: var(--player-column-width) !important;
 		max-width: var(--player-column-width) !important;
 		min-width: var(--player-column-width) !important;
-		box-sizing: border-box;
+		transition: border-left-color 0.3s ease, border-right-color 0.3s ease;
+	}
+
+	.score-cell-container.active {
+		border-left-color: var(--active-border-color, #007bff);
+		border-right-color: var(--active-border-color, #007bff);
+		border-left-width: 2px;
+		border-right-width: 2px;
 	}
 
 	.summary-cell {

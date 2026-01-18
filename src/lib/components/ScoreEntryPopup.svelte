@@ -112,8 +112,9 @@
 		}
 		
 		if (numberPadValue === '') {
-			// No number entered: all digits enabled
-			return true;
+			// No number entered: disable 4 (too small as single digit, too big as first digit of two-digit number)
+			// Enable 0-3 and 5-9
+			return digit !== '4';
 		}
 		
 		const firstDigit = numberPadValue[0];
