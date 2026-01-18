@@ -13,10 +13,11 @@
 		isBonus?: boolean;
 		isEditable?: boolean;
 		playerColor?: PlayerColor | null;
+		isAnimated?: boolean;
 		onClick: () => void;
 	}
 
-	let { score, category, isBonus = false, isEditable = true, playerColor = null, onClick }: Props =
+	let { score, category, isBonus = false, isEditable = true, playerColor = null, isAnimated = false, onClick }: Props =
 		$props();
 
 	// Distinguish between empty (undefined) and skipped (null)
@@ -41,7 +42,10 @@
 		class:skipped={isSkipped}
 		class:bonus={isBonus}
 		class:has-player-color={playerColor !== null}
-		style={playerColor ? `background-color: ${playerColor.cell}; color: ${playerColor.text};` : ''}
+		class:animated={isAnimated}
+		style={playerColor 
+			? `background-color: ${playerColor.cell}; color: ${playerColor.text}; --glow-color: ${playerColor.header};` 
+			: '--glow-color: #007bff;'}
 		onclick={onClick}
 		onkeydown={handleCellKeydown}
 		role="button"
@@ -63,7 +67,10 @@
 		class:bonus={isBonus}
 		class:non-editable={true}
 		class:has-player-color={playerColor !== null}
-		style={playerColor ? `background-color: ${playerColor.cell}; color: ${playerColor.text};` : ''}
+		class:animated={isAnimated}
+		style={playerColor 
+			? `background-color: ${playerColor.cell}; color: ${playerColor.text}; --glow-color: ${playerColor.header};` 
+			: '--glow-color: #007bff;'}
 	>
 		<div class="score-value">
 			{#if isSkipped}
@@ -131,6 +138,23 @@
 
 	.score-value {
 		text-align: center;
+	}
+
+	.score-cell.animated {
+		position: relative;
+		animation: cellGlow 0.5s ease-out;
+	}
+
+	@keyframes cellGlow {
+		0% {
+			box-shadow: 0 0 0 0 var(--glow-color, #007bff);
+		}
+		50% {
+			box-shadow: 0 0 15px 5px var(--glow-color, #007bff);
+		}
+		100% {
+			box-shadow: 0 0 0 0 transparent;
+		}
 	}
 </style>
 

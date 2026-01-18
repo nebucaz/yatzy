@@ -16,6 +16,12 @@
 	import RankingPopup from './RankingPopup.svelte';
 	import HighScorePopup from './HighScorePopup.svelte';
 	import { triggerConfetti } from '../utils/confetti';
+	import dice1 from '../assets/dice-1.svg';
+	import dice2 from '../assets/dice-2.svg';
+	import dice3 from '../assets/dice-3.svg';
+	import dice4 from '../assets/dice-4.svg';
+	import dice5 from '../assets/dice-5.svg';
+	import dice6 from '../assets/dice-6.svg';
 
 	let playerNameEditState: {
 		isOpen: boolean;
@@ -28,6 +34,9 @@
 		category: ScoreCategory;
 		categoryLabel: string;
 	} | null = $state(null);
+	
+	// Track which cell should be animated
+	let animatedCell: { playerId: string; category: ScoreCategory } | null = $state(null);
 
 	let rankingPopupState: {
 		isOpen: boolean;
@@ -48,17 +57,17 @@
 	function getDiceIcon(category: ScoreCategory | 'summary'): string | null {
 		switch (category) {
 			case 'ones':
-				return '⚀'; // Die Face-1
+				return dice1;
 			case 'twos':
-				return '⚁'; // Die Face-2
+				return dice2;
 			case 'threes':
-				return '⚂'; // Die Face-3
+				return dice3;
 			case 'fours':
-				return '⚃'; // Die Face-4
+				return dice4;
 			case 'fives':
-				return '⚄'; // Die Face-5
+				return dice5;
 			case 'sixes':
-				return '⚅'; // Die Face-6
+				return dice6;
 			default:
 				return null;
 		}
@@ -158,6 +167,12 @@
 		}
 		
 		popupState = null;
+		
+		// Trigger animation for the cell that was just updated
+		animatedCell = { playerId, category };
+		setTimeout(() => {
+			animatedCell = null;
+		}, 500);
 	}
 
 	function handleCellClick(playerId: string, category: ScoreCategory | 'summary') {
@@ -333,7 +348,7 @@
 		<table class="score-table">
 			<thead>
 				<tr>
-					<th class="category-col">{t('category', currentLang)}</th>
+					<th class="category-col category-label">{t('category', currentLang)}</th>
 					{#each players as player (player.id)}
 						{@const colorIndex = player.colorIndex ?? 0}
 						<th
@@ -358,10 +373,12 @@
 					{@const diceIcon = getDiceIcon(category)}
 					<tr>
 						<td class="category-label">
-							{#if diceIcon}
-								<span class="dice-icon">{diceIcon}</span>
-							{/if}
-							{getCategoryLabel(category)}
+							<span class="category-label-content">
+								{getCategoryLabel(category)}
+								{#if diceIcon}
+									<img src={diceIcon} alt="" class="dice-icon" />
+								{/if}
+							</span>
 						</td>
 						{#each players as player (player.id)}
 							{@const colorIndex = player.colorIndex ?? 0}
@@ -380,12 +397,14 @@
 									{@const hasValue = cellScore !== undefined && cellScore !== null}
 									{@const isSkipped = cellScore === null}
 									{@const isBonus = scoreCategory === 'bonus'}
+									{@const shouldAnimate = animatedCell?.playerId === player.id && animatedCell?.category === scoreCategory}
 									<ScoreCell
 										score={cellScore}
 										category={scoreCategory}
 										isBonus={isBonus}
 										isEditable={!isBonus}
-										playerColor={isBonus || hasValue || isSkipped ? playerColor : null}
+										playerColor={isBonus || hasValue || isSkipped || shouldAnimate ? playerColor : null}
+										isAnimated={shouldAnimate}
 										onClick={() => handleCellClick(player.id, scoreCategory)}
 									/>
 								{/if}
@@ -539,6 +558,8 @@
 		width: auto;
 		min-width: fit-content;
 		background: #f8f9fa;
+		text-align: left;
+		padding: 1px;
 	}
 
 	.player-col {
@@ -596,17 +617,23 @@
 		font-weight: 500;
 		border: 1px solid #ddd;
 		background: #f8f9fa;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
 		height: 3rem;
 		box-sizing: border-box;
 	}
 
+	.category-label-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		height: 100%;
+	}
+
 	.dice-icon {
-		font-size: 1.5rem;
-		line-height: 1;
-		display: inline-block;
+		width: 1.5rem;
+		height: 1.5rem;
+		object-fit: contain;
+		flex-shrink: 0;
 	}
 
 	.score-cell-container {

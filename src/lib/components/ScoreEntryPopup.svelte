@@ -3,6 +3,12 @@
 	import { getPossibleValues } from '../utils/scoreValues';
 	import { languageStore } from '../stores/i18nStore';
 	import { t } from '../utils/i18n';
+	import dice1 from '../assets/dice-1.svg';
+	import dice2 from '../assets/dice-2.svg';
+	import dice3 from '../assets/dice-3.svg';
+	import dice4 from '../assets/dice-4.svg';
+	import dice5 from '../assets/dice-5.svg';
+	import dice6 from '../assets/dice-6.svg';
 
 	// Make component reactive to language changes
 	let currentLang = $derived($languageStore);
@@ -35,14 +41,14 @@
 	
 	let validationError = $state('');
 
-	// Dice icons: ⚀ ⚁ ⚂ ⚃ ⚄ ⚅
+	// Dice icons: SVG files
 	const diceIcons = [
-		{ value: 1, icon: '⚀' },
-		{ value: 2, icon: '⚁' },
-		{ value: 3, icon: '⚂' },
-		{ value: 4, icon: '⚃' },
-		{ value: 5, icon: '⚄' },
-		{ value: 6, icon: '⚅' }
+		{ value: 1, icon: dice1 },
+		{ value: 2, icon: dice2 },
+		{ value: 3, icon: dice3 },
+		{ value: 4, icon: dice4 },
+		{ value: 5, icon: dice5 },
+		{ value: 6, icon: dice6 }
 	];
 
 	// Multipliers: 1x, 2x, 3x, 4x, 5x
@@ -95,8 +101,46 @@
 		onSetScore(value);
 	}
 
+	function isDigitAllowed(digit: string): boolean {
+		if (!isChance || digit === 'backspace' || digit === 'clear') {
+			return true;
+		}
+		
+		// After 2 digits are entered, all numbers are disabled
+		if (numberPadValue.length >= 2) {
+			return false;
+		}
+		
+		if (numberPadValue === '') {
+			// No number entered: all digits enabled
+			return true;
+		}
+		
+		const firstDigit = numberPadValue[0];
+		const firstDigitNum = parseInt(firstDigit, 10);
+		
+		if (firstDigitNum >= 0 && firstDigitNum <= 2) {
+			// First digit is 0-2: all digits enabled
+			return true;
+		}
+		
+		if (firstDigitNum === 3) {
+			// First digit is 3: only 0 is enabled
+			return digit === '0';
+		}
+		
+		// First digit is >3: all digits disabled
+		return false;
+	}
+
 	function handleNumberPadInput(digit: string) {
 		validationError = ''; // Clear validation error on input
+		
+		// Check if digit is allowed for chance category
+		if (!isDigitAllowed(digit)) {
+			return;
+		}
+		
 		if (digit === 'backspace') {
 			numberPadValue = numberPadValue.slice(0, -1);
 		} else if (digit === 'clear') {
@@ -184,17 +228,17 @@
 								onclick={() => handleDiceIconSelect(dice.value)}
 								title={dice.value.toString()}
 							>
-								<span class="dice-icon-large">{dice.icon}</span>
+								<img src={dice.icon} alt={`Dice ${dice.value}`} class="dice-icon-large" />
 							</button>
 						{/each}
 					</div>
 					<div class="dice-help-text">
 						{#if category === 'onePair'}
-							Select a dice value (value = dice × 2)
+							{t('diceHelpOnePair', currentLang)}
 						{:else if category === 'threeOfAKind'}
-							Select a dice value (value = dice × 3)
+							{t('diceHelpThreeOfAKind', currentLang)}
 						{:else if category === 'fourOfAKind'}
-							Select a dice value (value = dice × 4)
+							{t('diceHelpFourOfAKind', currentLang)}
 						{/if}
 					</div>
 				</div>
@@ -212,7 +256,7 @@
 						{/each}
 					</div>
 					<div class="multiplier-help-text">
-						Select a multiplier (value = {getCategoryBaseValue(category)} × multiplier)
+						{t('multiplierHelp', currentLang).replace('{0}', getCategoryBaseValue(category).toString())}
 					</div>
 				</div>
 			{:else if useNumberPad}
@@ -226,16 +270,16 @@
 						<div class="chance-hint">Enter a value between 5 and 30</div>
 					{/if}
 					<div class="number-pad">
-						<button class="num-btn" onclick={() => handleNumberPadInput('1')}>1</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('2')}>2</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('3')}>3</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('4')}>4</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('5')}>5</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('6')}>6</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('7')}>7</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('8')}>8</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('9')}>9</button>
-						<button class="num-btn" onclick={() => handleNumberPadInput('0')}>0</button>
+						<button class="num-btn" disabled={!isDigitAllowed('1')} onclick={() => handleNumberPadInput('1')}>1</button>
+						<button class="num-btn" disabled={!isDigitAllowed('2')} onclick={() => handleNumberPadInput('2')}>2</button>
+						<button class="num-btn" disabled={!isDigitAllowed('3')} onclick={() => handleNumberPadInput('3')}>3</button>
+						<button class="num-btn" disabled={!isDigitAllowed('4')} onclick={() => handleNumberPadInput('4')}>4</button>
+						<button class="num-btn" disabled={!isDigitAllowed('5')} onclick={() => handleNumberPadInput('5')}>5</button>
+						<button class="num-btn" disabled={!isDigitAllowed('6')} onclick={() => handleNumberPadInput('6')}>6</button>
+						<button class="num-btn" disabled={!isDigitAllowed('7')} onclick={() => handleNumberPadInput('7')}>7</button>
+						<button class="num-btn" disabled={!isDigitAllowed('8')} onclick={() => handleNumberPadInput('8')}>8</button>
+						<button class="num-btn" disabled={!isDigitAllowed('9')} onclick={() => handleNumberPadInput('9')}>9</button>
+						<button class="num-btn" disabled={!isDigitAllowed('0')} onclick={() => handleNumberPadInput('0')}>0</button>
 						<button class="num-btn" onclick={() => handleNumberPadInput('backspace')}>
 							⌫
 						</button>
@@ -363,9 +407,16 @@
 		transition: all 0.2s;
 	}
 
-	.num-btn:hover {
+	.num-btn:hover:not(:disabled) {
 		background: #f0f0f0;
 		border-color: #007bff;
+	}
+
+	.num-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+		background: #e9ecef;
+		color: #6c757d;
 	}
 
 	.confirm-btn {
@@ -469,8 +520,14 @@
 	}
 
 	.dice-icon-large {
-		font-size: 4rem;
-		line-height: 1;
+		width: 4rem;
+		height: 4rem;
+		object-fit: contain;
+		filter: brightness(0) saturate(100%) invert(27%) sepia(96%) saturate(7500%) hue-rotate(210deg) brightness(100%) contrast(100%);
+	}
+
+	.dice-icon-btn:hover .dice-icon-large {
+		filter: brightness(0) saturate(100%) invert(100%);
 	}
 
 	.dice-help-text {
@@ -486,14 +543,14 @@
 
 	.multipliers {
 		display: grid;
-		grid-template-columns: repeat(5, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 		gap: 0.5rem;
 		margin-bottom: 0.5rem;
 	}
 
 	.multiplier-btn {
-		padding: 1rem;
-		font-size: 1.5rem;
+		padding: 0.75rem;
+		font-size: 1.3rem;
 		font-weight: 600;
 		border: 2px solid #007bff;
 		background: white;
@@ -501,7 +558,27 @@
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s;
-		min-height: 70px;
+		min-height: 60px;
+		width: 100%;
+	}
+
+	@media (max-width: 480px) {
+		.multiplier-btn {
+			padding: 0.6rem;
+			font-size: 1.1rem;
+			min-height: 55px;
+		}
+	}
+
+	@media (max-width: 360px) {
+		.multipliers {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.multiplier-btn {
+			padding: 0.5rem;
+			font-size: 1rem;
+			min-height: 50px;
+		}
 	}
 
 	.multiplier-btn:hover {

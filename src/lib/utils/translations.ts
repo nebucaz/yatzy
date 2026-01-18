@@ -69,6 +69,12 @@ export interface Translations {
 	clearHistoryConfirmation: string;
 	deleteHistoryConfirmation: string;
 	removePlayerConfirmation: string;
+
+	// Help text for value entry
+	diceHelpOnePair: string;
+	diceHelpThreeOfAKind: string;
+	diceHelpFourOfAKind: string;
+	multiplierHelp: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -129,7 +135,11 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboardConfirmation: 'Are you sure you want to clear the scoreboard? This will reset to one player and cannot be undone.',
 		clearHistoryConfirmation: 'Are you sure you want to clear the game history? This action cannot be undone.',
 		deleteHistoryConfirmation: 'Are you sure you want to delete all game history? This action cannot be undone.',
-		removePlayerConfirmation: 'Are you sure you want to remove this player? This action cannot be undone.'
+		removePlayerConfirmation: 'Are you sure you want to remove this player? This action cannot be undone.',
+		diceHelpOnePair: 'Select a dice value (value = dice × 2)',
+		diceHelpThreeOfAKind: 'Select a dice value (value = dice × 3)',
+		diceHelpFourOfAKind: 'Select a dice value (value = dice × 4)',
+		multiplierHelp: 'Select a multiplier (value = {0} × multiplier)'
 	},
 	de: {
 		ones: 'Einsen',
@@ -188,7 +198,11 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboardConfirmation: 'Sind Sie sicher, dass Sie die Punkte-Tabelle zurücksetzen möchten? Dies setzt auf einen Spieler zurück und kann nicht rückgängig gemacht werden.',
 		clearHistoryConfirmation: 'Sind Sie sicher, dass Sie den Spielverlauf löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
 		deleteHistoryConfirmation: 'Sind Sie sicher, dass Sie den gesamten Spielverlauf löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
-		removePlayerConfirmation: 'Sind Sie sicher, dass Sie diesen Spieler entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.'
+		removePlayerConfirmation: 'Sind Sie sicher, dass Sie diesen Spieler entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+		diceHelpOnePair: 'Wählen Sie einen Würfelwert (Wert = Würfel × 2)',
+		diceHelpThreeOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 3)',
+		diceHelpFourOfAKind: 'Wählen Sie einen Würfelwert (Wert = Würfel × 4)',
+		multiplierHelp: 'Wählen Sie einen Multiplikator (Wert = {0} × Multiplikator)'
 	},
 	ft: {
 		ones: 'Unos',
@@ -247,7 +261,11 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboardConfirmation: '¿Está seguro de que desea limpiar el tablero? Esto restablecerá a un jugador y no se puede deshacer.',
 		clearHistoryConfirmation: '¿Está seguro de que desea limpiar el historial? Esta acción no se puede deshacer.',
 		deleteHistoryConfirmation: '¿Está seguro de que desea eliminar todo el historial de juegos? Esta acción no se puede deshacer.',
-		removePlayerConfirmation: '¿Está seguro de que desea eliminar este jugador? Esta acción no se puede deshacer.'
+		removePlayerConfirmation: '¿Está seguro de que desea eliminar este jugador? Esta acción no se puede deshacer.',
+		diceHelpOnePair: 'Seleccione un valor de dado (valor = dado × 2)',
+		diceHelpThreeOfAKind: 'Seleccione un valor de dado (valor = dado × 3)',
+		diceHelpFourOfAKind: 'Seleccione un valor de dado (valor = dado × 4)',
+		multiplierHelp: 'Seleccione un multiplicador (valor = {0} × multiplicador)'
 	},
 	fr: {
 		ones: 'Un',
@@ -306,7 +324,11 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboardConfirmation: 'Êtes-vous sûr de vouloir réinitialiser le tableau? Cela reviendra à un joueur et ne peut pas être annulé.',
 		clearHistoryConfirmation: 'Êtes-vous sûr de vouloir effacer l\'historique? Cette action ne peut pas être annulée.',
 		deleteHistoryConfirmation: 'Êtes-vous sûr de vouloir supprimer tout l\'historique des parties? Cette action ne peut pas être annulée.',
-		removePlayerConfirmation: 'Êtes-vous sûr de vouloir retirer ce joueur? Cette action ne peut pas être annulée.'
+		removePlayerConfirmation: 'Êtes-vous sûr de vouloir retirer ce joueur? Cette action ne peut pas être annulée.',
+		diceHelpOnePair: 'Sélectionnez une valeur de dé (valeur = dé × 2)',
+		diceHelpThreeOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 3)',
+		diceHelpFourOfAKind: 'Sélectionnez une valeur de dé (valeur = dé × 4)',
+		multiplierHelp: 'Sélectionnez un multiplicateur (valeur = {0} × multiplicateur)'
 	},
 	it: {
 		ones: 'Uno',
@@ -365,7 +387,11 @@ export const translations: Record<Language, Translations> = {
 		clearScoreboardConfirmation: 'Sei sicuro di voler azzerare il tabellone? Questo reimposterà a un giocatore e non può essere annullato.',
 		clearHistoryConfirmation: 'Sei sicuro di voler cancellare la cronologia? Questa azione non può essere annullata.',
 		deleteHistoryConfirmation: 'Sei sicuro di voler eliminare tutta la cronologia dei giochi? Questa azione non può essere annullata.',
-		removePlayerConfirmation: 'Sei sicuro di voler rimuovere questo giocatore? Questa azione non può essere annullata.'
+		removePlayerConfirmation: 'Sei sicuro di voler rimuovere questo giocatore? Questa azione non può essere annullata.',
+		diceHelpOnePair: 'Seleziona un valore del dado (valore = dado × 2)',
+		diceHelpThreeOfAKind: 'Seleziona un valore del dado (valore = dado × 3)',
+		diceHelpFourOfAKind: 'Seleziona un valore del dado (valore = dado × 4)',
+		multiplierHelp: 'Seleziona un moltiplicatore (valore = {0} × moltiplicatore)'
 	}
 };
 
