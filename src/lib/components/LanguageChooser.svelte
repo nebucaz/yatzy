@@ -4,7 +4,7 @@
 	const languages: { code: Language; name: string; flag: string }[] = [
 		{ code: 'en', name: 'English', flag: '🇬🇧' },
 		{ code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-		{ code: 'ft', name: 'Español', flag: '🇪🇸' },
+		{ code: 'es', name: 'Español', flag: '🇪🇸' },
 		{ code: 'fr', name: 'Français', flag: '🇫🇷' },
 		{ code: 'it', name: 'Italiano', flag: '🇮🇹' }
 	];

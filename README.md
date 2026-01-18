@@ -29,7 +29,7 @@ A single-page application (SPA) for tracking and recording scores for multiple p
 - **Localization**: Support for multiple languages:
   - English (en)
   - German (de) - Default
-  - Spanish (ft)
+  - Spanish (es)
   - French (fr)
   - Italian (it)
 - **Persistent Storage**: All game data stored in browser's local storage

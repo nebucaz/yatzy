@@ -225,7 +225,7 @@ export const translations: Record<Language, Translations> = {
 		fullHouseThree: 'Dreierpasch:',
 		fullHouseResult: 'Wert: {0}'
 	},
-	ft: {
+	es: {
 		ones: 'Unos',
 		twos: 'Dos',
 		threes: 'Tres',

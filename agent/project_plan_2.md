@@ -29,7 +29,7 @@ Status: ✅ Completed
 
 ### Acceptance Criteria:
 - Language chooser in top right corner (right of the "clear" button). 
-- Supported languages: en, de, ft, it
+- Supported languages: en, de, es, it
 - Translate the strings in the scoreboard to the specified languages
 - Allow to select language in the language chooser
 - Set default language to "de"

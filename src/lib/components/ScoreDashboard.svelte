@@ -16,6 +16,7 @@
 	import RankingPopup from './RankingPopup.svelte';
 	import HighScorePopup from './HighScorePopup.svelte';
 	import { triggerConfetti } from '../utils/confetti';
+	import { playYatzySound } from '../utils/audio';
 	import dice1 from '../assets/dice-1.svg';
 	import dice2 from '../assets/dice-2.svg';
 	import dice3 from '../assets/dice-3.svg';
@@ -216,10 +217,11 @@
 		const wasClearing = score === undefined;
 		gameStore.setScore(playerId, category, score);
 		
-		// Trigger confetti if yatzy (50 points) is entered
+		// Trigger confetti and sound if yatzy (50 points) is entered
 		if (category === 'yatzy' && score === 50) {
 			setTimeout(() => {
 				triggerConfetti();
+				playYatzySound();
 			}, 100);
 		}
 		

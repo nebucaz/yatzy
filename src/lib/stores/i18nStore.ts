@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { translations } from '../utils/translations';
 
-export type Language = 'en' | 'de' | 'ft' | 'fr' | 'it';
+export type Language = 'en' | 'de' | 'es' | 'fr' | 'it';
 
 const DEFAULT_LANGUAGE: Language = 'de';
 
@@ -9,7 +9,7 @@ const DEFAULT_LANGUAGE: Language = 'de';
 function getStoredLanguage(): Language {
 	if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
 	const stored = localStorage.getItem('yatzy-language');
-	if (stored && (stored === 'en' || stored === 'de' || stored === 'ft' || stored === 'fr' || stored === 'it')) {
+	if (stored && (stored === 'en' || stored === 'de' || stored === 'es' || stored === 'fr' || stored === 'it')) {
 		return stored as Language;
 	}
 	return DEFAULT_LANGUAGE;
