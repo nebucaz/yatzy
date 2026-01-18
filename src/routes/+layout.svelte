@@ -1,7 +1,14 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import { preloadYatzySound } from '$lib/utils/audio';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	// Preload audio when page loads
+	onMount(() => {
+		preloadYatzySound();
+	});
 </script>
 
 <svelte:head>
